@@ -65,7 +65,7 @@ def head(title, desc, active):
 <header class="site-header">
   <div class="wrap">
     <a href="index.html" class="brand">
-      <img src="assets/logo.png" alt="Khyber Spice Invader" style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+      <img src="assets/logo-cropped.png" alt="Khyber Spice Invader" style="height:38px; width:auto; border-radius:6px; object-fit:contain; flex-shrink:0;">
       <div class="brand-text">
         <span class="name">Khyber Spice Invader</span>
         <span class="tag">Royal Oak · Est. 2005</span>
@@ -80,7 +80,11 @@ def head(title, desc, active):
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
       <div style="position:relative;">
-        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Change colour theme">&#127912;</button>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Change colour theme">
+          &#127912;
+          <span class="theme-toggle-dot" id="themeDot"></span>
+        </button>
+        <div class="theme-teaser" id="themeTeaser">Tap to try a different look &mdash; 4 colour themes!</div>
         <div class="theme-popover" id="themePopover">
           <p>Colour theme</p>
           <div class="theme-options" id="themeOptions">
@@ -108,7 +112,7 @@ FOOT = """
     <div class="footer-grid">
       <div class="footer-about">
         <div class="brand" style="margin-bottom:16px;">
-          <img src="assets/logo.png" alt="Khyber Spice Invader" style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0;">
+          <img src="assets/logo-cropped.png" alt="Khyber Spice Invader" style="height:38px; width:auto; border-radius:6px; object-fit:contain; flex-shrink:0;">
           <div class="brand-text">
             <span class="name">Khyber Spice Invader</span>
             <span class="tag">Royal Oak · Est. 2005</span>
@@ -219,6 +223,10 @@ def write(path, html):
 home_body = """
 <section class="hero">
   <canvas id="spiceCanvas" aria-hidden="true"></canvas>
+  <video id="spiceVideo" autoplay muted loop playsinline aria-hidden="true">
+    <source src="assets/spice-pour.webm" type="video/webm">
+    <source src="assets/spice-pour.mp4" type="video/mp4">
+  </video>
   <div class="wrap">
     <div class="stamp">Est. 2005<br>Royal Oak<br>Auckland</div>
     <div class="hero-eyebrow">Indian &middot; Sri Lankan &middot; Pakistani &middot; Iranian &middot; Arabic Grocery</div>
@@ -383,8 +391,9 @@ function renderGrid(){
     <div class="product-card" data-name="${p.name.replace(/"/g,'&quot;')}" data-price="${p.price}" data-unit="${p.unit}" data-category="${p.category}">
       ${p.stock === 'out' ? '<span class="badge badge-out">Sold out</span>' : (p.note ? '<span class="badge badge-sale">' + p.note + '</span>' : '')}
       <div class="photo" data-open-modal>
-        <img id="${imgId}" src="${guessImageUrl(p.name)}" alt="${p.name}"
-             onerror="this.replaceWith(iconFallback('${p.category}'))" loading="lazy">
+        <img id="${imgId}" src="${guessImageUrls(p.name)[0]}" alt="${p.name}"
+             data-candidates='${JSON.stringify(guessImageUrls(p.name)).replace(/'/g,"&#39;")}' data-attempt="1"
+             onerror="tryNextImage(this,'${p.category}')" loading="lazy">
       </div>
       <h4 data-open-modal>${p.name}</h4>
       <div class="unit qty-readout">1 &times; ${p.unit}</div>
@@ -449,7 +458,7 @@ function openProductModal({ name, price, unit, category, outOfStock }){
     modal.innerHTML = `
       <button class="pm-close" aria-label="Close">&times;</button>
       <div class="pm-photo">
-        <img src="${guessImageUrl(name)}" alt="${name}" onerror="this.replaceWith(iconFallback('${category}'))">
+        <img src="${guessImageUrls(name)[0]}" alt="${name}" data-candidates='${JSON.stringify(guessImageUrls(name)).replace(/'/g,"&#39;")}' data-attempt="1" onerror="tryNextImage(this,'${category}')">
       </div>
       <div class="pm-body">
         <div class="pm-cat">${labelFor(category)}</div>
@@ -473,7 +482,7 @@ function openProductModal({ name, price, unit, category, outOfStock }){
           <div class="pm-related-grid">
             ${related.map(r => `
               <div class="pm-related-item" data-name="${r.name.replace(/"/g,'&quot;')}" data-price="${r.price}" data-unit="${r.unit}" data-category="${r.category}">
-                <div class="photo"><img src="${guessImageUrl(r.name)}" alt="${r.name}" onerror="this.replaceWith(iconFallback('${r.category}'))"></div>
+                <div class="photo"><img src="${guessImageUrls(r.name)[0]}" alt="${r.name}" data-candidates='${JSON.stringify(guessImageUrls(r.name)).replace(/'/g,"&#39;")}' data-attempt="1" onerror="tryNextImage(this,'${r.category}')"></div>
                 <div class="rn">${r.name}</div>
               </div>
             `).join('')}
