@@ -7,12 +7,35 @@
 
 const CART_KEY = 'khyber_cart_v1';
 
+function tryNextImage(img, category){
+  const urls = JSON.parse(img.dataset.candidates || '[]');
+  const attempt = parseInt(img.dataset.attempt || '0');
+  if (attempt < urls.length){
+    img.dataset.attempt = attempt + 1;
+    img.src = urls[attempt];
+  } else {
+    img.replaceWith(iconFallback(category));
+  }
+}
+function smartImg(name, category, extraAttrs){
+  const urls = guessImageUrls(name);
+  return `<img src="${urls[0]}" alt="${name}" loading="lazy" data-candidates='${JSON.stringify(urls).replace(/'/g,"&#39;")}' data-attempt="1" onerror="tryNextImage(this,'${category}')" ${extraAttrs||''}>`;
+}
+
 // Guess the live product photo URL from the original store's predictable
-// CDN naming pattern. If it 404s, callers fall back to an icon (see
-// data-fallback wiring in shop.js) — so a wrong guess never shows broken art.
-function guessImageUrl(name){
+// CDN naming pattern. Several filename variants are tried in sequence
+// (see data-attempt wiring in shop.js) before falling back to a
+// designed icon card — so a wrong guess never shows broken art, and
+// coverage is maximised without needing per-product manual images.
+function guessImageUrls(name){
   const slug = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  return `https://www.khyberspice.co.nz/cdn/shop/products/${slug}_medium.jpg`;
+  const base = 'https://www.khyberspice.co.nz/cdn/shop/products/';
+  return [
+    base + slug + '_medium.jpg',
+    base + slug + '.jpg',
+    base + slug + '_grande.jpg',
+    base + slug + '_large.jpg',
+  ];
 }
 
 function getCart(){
@@ -99,7 +122,17 @@ document.addEventListener('DOMContentLoaded', () => {
   // ---- Theme switcher ----
   const themeToggle = document.getElementById('themeToggle');
   const themePopover = document.getElementById('themePopover');
+  const themeTeaser = document.getElementById('themeTeaser');
+  const themeDot = document.getElementById('themeDot');
   const savedTheme = localStorage.getItem('khyber_theme') || 'khyber';
+
+  if (!localStorage.getItem('khyber_theme_seen')){
+    setTimeout(() => { themeTeaser?.classList.add('show'); }, 1200);
+    setTimeout(() => { themeTeaser?.classList.remove('show'); }, 9000);
+  } else {
+    themeDot?.remove();
+  }
+
   document.querySelectorAll('.theme-option').forEach(btn => {
     if (btn.dataset.theme === savedTheme) btn.classList.add('active');
     btn.addEventListener('click', () => {
@@ -107,12 +140,17 @@ document.addEventListener('DOMContentLoaded', () => {
       if (t === 'khyber') document.documentElement.removeAttribute('data-theme');
       else document.documentElement.setAttribute('data-theme', t);
       localStorage.setItem('khyber_theme', t);
+      localStorage.setItem('khyber_theme_seen', '1');
+      themeDot?.remove();
       document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
   });
   themeToggle?.addEventListener('click', (e) => {
     e.stopPropagation();
+    themeTeaser?.classList.remove('show');
+    localStorage.setItem('khyber_theme_seen', '1');
+    themeDot?.remove();
     themePopover?.classList.toggle('open');
   });
   document.addEventListener('click', (e) => {

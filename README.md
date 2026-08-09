@@ -132,6 +132,27 @@ Card") reflects the real promo card you sent. If you want it to link
 somewhere (a dedicated rewards page, a sign-up form) let me know and
 I'll build that out.
 
+## 10. Hero background video
+
+`assets/spice-pour.webm` / `.mp4` is an original animated loop I generated
+frame-by-frame (spices pouring from a jar in your brand colours) — not
+stock footage, so there's no licence to track down or risk of it being
+someone else's copyrighted work on your live site. It autoplays muted
+and loops. If you'd rather have a real filmed clip of the store later,
+swap the two files in `assets/` (same filenames) and it'll just work —
+no code changes needed.
+
+## 11. Product photos
+
+Each product tries several likely filenames from the original store's
+CDN before giving up and showing a designed icon card instead of a
+broken image. I did not hotlink random unlicensed photos from the open
+internet for individual products — for a live business site, an image
+whose usage rights I can't verify is a real liability, not just a visual
+nitpick. The fastest way to get every single product a guaranteed real
+photo is still the Shopify CSV export (section 3) or free-licensed stock
+photos dropped into `assets/products/` (ask me and I'll wire it up).
+
 ## Notes
 
 - Contact form currently shows a placeholder alert on submit. To make it
