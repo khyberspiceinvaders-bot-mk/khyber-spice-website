@@ -9,30 +9,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
 
 :root{
-  /* Warmer, slightly blue-leaning ink so it reads modern rather than flat brown */
-  --ink:        #191A1F;
-  --ink-soft:   #212329;
-  --surface:    #262832;
-  --surface-2:  #2F323D;
-  --line:       #3D404C;
+  /* "Khyber Classic" — warmer, less black, pulled from the real logo's orange */
+  --ink:        #221A12;
+  --ink-soft:   #2B2116;
+  --surface:    #33271A;
+  --surface-2:  #3E3020;
+  --line:       #5A4630;
 
-  --paper:      #F6EFE2;
-  --paper-dim:  #C7C3D6;
-  --paper-faint:#8A87A0;
+  --paper:      #FBF1DF;
+  --paper-dim:  #D9C5A6;
+  --paper-faint:#A6906F;
 
-  /* Brighter, more saturated accents for a welcoming, energetic feel */
-  --turmeric:   #FFB627;
-  --turmeric-dk:#D8940F;
-  --paprika:    #FF5A36;
-  --paprika-dk: #D63E1F;
-  --cardamom:   #6FCF6E;
-  --cardamom-dk:#4A9E4E;
-  --violet:     #9B7EF0;
+  --turmeric:   #F0981F;
+  --turmeric-dk:#C97A0E;
+  --paprika:    #E8531F;
+  --paprika-dk: #B93E14;
+  --cardamom:   #7FBF5E;
+  --cardamom-dk:#589240;
+  --violet:     #C98A4B;
 
   --grad-warm: linear-gradient(135deg, var(--turmeric), var(--paprika));
-  --grad-cool: linear-gradient(135deg, var(--cardamom), var(--violet));
-  --glow-turmeric: 0 0 32px rgba(255,182,39,0.25);
-  --glow-paprika: 0 0 32px rgba(255,90,54,0.22);
+  --grad-cool: linear-gradient(135deg, var(--cardamom), var(--turmeric-dk));
+  --glow-turmeric: 0 0 32px rgba(240,152,31,0.25);
+  --glow-paprika: 0 0 32px rgba(232,83,31,0.22);
 
   --font-display: 'Fraunces', Georgia, serif;
   --font-body: 'Work Sans', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -41,6 +40,67 @@
   --radius: 10px;
   --radius-sm: 6px;
   --container: 1180px;
+}
+
+/* ---------- Alternate themes — switchable at runtime via [data-theme] on <html> ---------- */
+[data-theme="light"]{
+  --ink:        #FBF4E7;
+  --ink-soft:   #F5EBD8;
+  --surface:    #FFFFFF;
+  --surface-2:  #F1E4CB;
+  --line:       #E3D2AE;
+
+  --paper:      #2A2013;
+  --paper-dim:  #5C4C34;
+  --paper-faint:#8A7857;
+
+  --turmeric:   #D97F0A;
+  --turmeric-dk:#B5670A;
+  --paprika:    #D4491B;
+  --paprika-dk: #A9380F;
+  --cardamom:   #4F8C3B;
+  --cardamom-dk:#3A6B2C;
+  --violet:     #B06A2E;
+}
+
+[data-theme="sunset"]{
+  --ink:        #1E1230;
+  --ink-soft:   #281A3D;
+  --surface:    #33224E;
+  --surface-2:  #3E2A5C;
+  --line:       #5B3F80;
+
+  --paper:      #FBEEFA;
+  --paper-dim:  #D9C0E8;
+  --paper-faint:#A88FC0;
+
+  --turmeric:   #FFB74D;
+  --turmeric-dk:#F5952E;
+  --paprika:    #FF4D8D;
+  --paprika-dk: #E6367A;
+  --cardamom:   #4DE3C4;
+  --cardamom-dk:#2FC2A6;
+  --violet:     #B983FF;
+}
+
+[data-theme="midnight"]{
+  --ink:        #12141C;
+  --ink-soft:   #191C26;
+  --surface:    #212431;
+  --surface-2:  #2A2E3D;
+  --line:       #3A3F52;
+
+  --paper:      #F1F0FA;
+  --paper-dim:  #B9BCD4;
+  --paper-faint:#7C7FA0;
+
+  --turmeric:   #4DD4FF;
+  --turmeric-dk:#2CB3E0;
+  --paprika:    #7C8CFF;
+  --paprika-dk: #5C6DE8;
+  --cardamom:   #4DFFB0;
+  --cardamom-dk:#2AD996;
+  --violet:     #B983FF;
 }
 
 *,*::before,*::after{ box-sizing:border-box; }
@@ -53,6 +113,7 @@ body{
   font-size:16px;
   line-height:1.55;
   -webkit-font-smoothing:antialiased;
+  transition:background .25s ease, color .25s ease;
 }
 img{ max-width:100%; display:block; }
 a{ color:inherit; text-decoration:none; }
@@ -221,8 +282,14 @@ button{ font-family:inherit; cursor:pointer; }
   position:relative; overflow:hidden;
   border-bottom:1px solid var(--line);
   background:
-    radial-gradient(circle at 85% -10%, rgba(231,163,28,0.16), transparent 55%),
-    radial-gradient(circle at 5% 110%, rgba(193,68,14,0.14), transparent 55%);
+    radial-gradient(circle at 85% -10%, rgba(255,182,39,0.16), transparent 55%),
+    radial-gradient(circle at 5% 110%, rgba(255,90,54,0.14), transparent 55%);
+}
+.hero canvas#spiceCanvas{
+  position:absolute; inset:0; width:100%; height:100%; opacity:0.5; pointer-events:none;
+}
+@media (prefers-reduced-motion: reduce){
+  .hero canvas#spiceCanvas{ display:none; }
 }
 .hero .wrap{ padding-top:88px; padding-bottom:88px; position:relative; }
 .hero-eyebrow{
@@ -454,13 +521,38 @@ button{ font-family:inherit; cursor:pointer; }
 /* ---------- Khyber Bot ---------- */
 .bot-launcher{
   position:fixed; bottom:24px; right:24px; z-index:120;
-  width:58px; height:58px; border-radius:50%; border:none;
+  display:flex; align-items:center; gap:10px;
+  padding:14px 20px 14px 16px; border-radius:999px; border:none;
   background:var(--grad-warm); color:var(--ink);
-  display:flex; align-items:center; justify-content:center;
-  box-shadow:0 8px 24px rgba(0,0,0,0.35), var(--glow-turmeric);
-  font-size:24px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.4), var(--glow-turmeric);
+  font-family:var(--font-mono); font-weight:700; font-size:13px; letter-spacing:0.02em;
+}
+.bot-launcher .bl-icon{
+  width:30px; height:30px; border-radius:50%; background:rgba(20,20,25,0.15);
+  display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0;
+}
+.bot-launcher .bl-ring{
+  position:absolute; inset:-6px; border-radius:999px; border:2px solid var(--turmeric);
+  opacity:0.6; animation:pulse-ring 2.2s ease-out infinite;
+}
+@keyframes pulse-ring{
+  0%{ transform:scale(0.92); opacity:0.55; }
+  70%{ transform:scale(1.14); opacity:0; }
+  100%{ transform:scale(1.14); opacity:0; }
 }
 .bot-launcher:hover{ transform:translateY(-2px); }
+@media (max-width:560px){ .bot-launcher span.bl-label{ display:none; } .bot-launcher{ padding:14px; } }
+
+.bot-teaser{
+  position:fixed; bottom:96px; right:24px; z-index:119;
+  background:var(--ink-soft); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px 18px; max-width:230px; font-size:13px; color:var(--paper-dim);
+  box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  opacity:0; transform:translateY(8px); pointer-events:none; transition:opacity .3s ease, transform .3s ease;
+}
+.bot-teaser.show{ opacity:1; transform:translateY(0); pointer-events:auto; }
+.bot-teaser button{ background:none; border:none; color:var(--paper-faint); position:absolute; top:6px; right:8px; font-size:14px; }
+
 .bot-panel{
   position:fixed; bottom:96px; right:24px; z-index:120;
   width:min(360px, calc(100vw - 32px)); max-height:min(520px, 70vh);
@@ -524,6 +616,58 @@ button{ font-family:inherit; cursor:pointer; }
 /* ---------- Utility ---------- */
 .text-center{ text-align:center; }
 .mt-0{ margin-top:0; }
+
+/* ---------- Theme switcher ---------- */
+.theme-toggle{
+  position:relative; width:38px; height:38px; border-radius:50%;
+  background:var(--surface); border:1px solid var(--line); color:var(--paper);
+  display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0;
+}
+.theme-toggle:hover{ border-color:var(--turmeric); }
+.theme-popover{
+  position:absolute; top:calc(100% + 10px); right:0; z-index:60;
+  background:var(--ink-soft); border:1px solid var(--line); border-radius:var(--radius);
+  padding:14px; width:220px; display:none; box-shadow:0 16px 40px rgba(0,0,0,0.4);
+}
+.theme-popover.open{ display:block; }
+.theme-popover p{ margin:0 0 10px; font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:0.06em; color:var(--paper-faint); }
+.theme-options{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.theme-option{
+  display:flex; align-items:center; gap:8px; padding:9px 10px; border-radius:var(--radius-sm);
+  border:1px solid var(--line); background:var(--surface); color:var(--paper); font-size:12px;
+}
+.theme-option:hover{ border-color:var(--turmeric); }
+.theme-option.active{ border-color:var(--turmeric); box-shadow:var(--glow-turmeric); }
+.theme-option .swatch-dot{ width:14px; height:14px; border-radius:50%; flex-shrink:0; }
+
+/* ---------- VIP promo strip ---------- */
+.vip-strip{
+  background:var(--grad-warm); color:var(--ink); position:relative; z-index:2;
+}
+.vip-strip .wrap{
+  padding:14px 24px; display:flex; align-items:center; justify-content:center; gap:10px;
+  flex-wrap:wrap; text-align:center; font-family:var(--font-mono); font-size:13px; font-weight:700;
+}
+.vip-strip .wrap span.tag{
+  background:rgba(0,0,0,0.14); padding:3px 9px; border-radius:999px; font-size:10.5px; letter-spacing:0.04em;
+}
+
+/* ---------- Related products (product modal) ---------- */
+.pm-related{ margin-top:6px; }
+.pm-related h5{ font-family:var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--paper-faint); margin:0 0 12px; }
+.pm-related-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; }
+.pm-related-item{
+  background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm);
+  padding:10px; text-align:center; cursor:pointer;
+}
+.pm-related-item:hover{ border-color:var(--turmeric); }
+.pm-related-item .photo{ height:52px; margin-bottom:8px; border-radius:4px; }
+.pm-related-item .icon-fallback{ font-size:22px; }
+.pm-related-item .rn{ font-size:11px; line-height:1.3; }
+.pm-multiple-note{
+  font-size:12.5px; color:var(--paprika); background:rgba(232,83,31,0.1);
+  border:1px solid rgba(232,83,31,0.25); border-radius:var(--radius-sm); padding:9px 12px; margin-bottom:18px;
+}
 
 /* ---------- Product photo fallback gradients ---------- */
 .photo-grad-turmeric{ background:linear-gradient(135deg, rgba(255,182,39,0.38), rgba(255,90,54,0.14)); }

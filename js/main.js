@@ -95,4 +95,29 @@ document.addEventListener('DOMContentLoaded', () => {
       location.href = 'products.html?q=' + encodeURIComponent(headerSearch.value.trim());
     }
   });
+
+  // ---- Theme switcher ----
+  const themeToggle = document.getElementById('themeToggle');
+  const themePopover = document.getElementById('themePopover');
+  const savedTheme = localStorage.getItem('khyber_theme') || 'khyber';
+  document.querySelectorAll('.theme-option').forEach(btn => {
+    if (btn.dataset.theme === savedTheme) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.theme;
+      if (t === 'khyber') document.documentElement.removeAttribute('data-theme');
+      else document.documentElement.setAttribute('data-theme', t);
+      localStorage.setItem('khyber_theme', t);
+      document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+  themeToggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    themePopover?.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (themePopover?.classList.contains('open') && !themePopover.contains(e.target) && e.target !== themeToggle){
+      themePopover.classList.remove('open');
+    }
+  });
 });

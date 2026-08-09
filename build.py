@@ -29,6 +29,10 @@ def head(title, desc, active):
 <title>{title}</title>
 <meta name="description" content="{desc}">
 <link rel="stylesheet" href="css/styles.css">
+<script>
+  // Apply saved theme before paint to avoid a flash of the wrong theme.
+  (function(){{ var t = localStorage.getItem('khyber_theme'); if (t && t !== 'khyber') document.documentElement.setAttribute('data-theme', t); }})();
+</script>
 </head>
 <body>
 <div class="grain"></div>
@@ -44,6 +48,13 @@ def head(title, desc, active):
   <span class="icon" style="top:38%; right:30%; font-size:28px; animation-delay:-14s;">&#129347;</span>
 </div>
 
+<div class="vip-strip">
+  <div class="wrap">
+    <span class="tag">VIP</span>
+    <span>Ask in-store about our VIP Customer Card &mdash; start earning cashback rewards.</span>
+  </div>
+</div>
+
 <div class="utility-bar">
   <div class="wrap">
     <span>822 Manukau Road, Royal Oak, Auckland <span class="dot">·</span> Open Mon&ndash;Sun 9:00am&ndash;8:30pm</span>
@@ -54,7 +65,7 @@ def head(title, desc, active):
 <header class="site-header">
   <div class="wrap">
     <a href="index.html" class="brand">
-      <div class="brand-mark">KS</div>
+      <img src="assets/logo.png" alt="Khyber Spice Invader" style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0;">
       <div class="brand-text">
         <span class="name">Khyber Spice Invader</span>
         <span class="tag">Royal Oak · Est. 2005</span>
@@ -68,6 +79,18 @@ def head(title, desc, active):
       {nav_html}
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
+      <div style="position:relative;">
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Change colour theme">&#127912;</button>
+        <div class="theme-popover" id="themePopover">
+          <p>Colour theme</p>
+          <div class="theme-options" id="themeOptions">
+            <button class="theme-option" data-theme="khyber"><span class="swatch-dot" style="background:#F0981F;"></span>Classic</button>
+            <button class="theme-option" data-theme="light"><span class="swatch-dot" style="background:#D97F0A;"></span>Light</button>
+            <button class="theme-option" data-theme="sunset"><span class="swatch-dot" style="background:#FF4D8D;"></span>Sunset</button>
+            <button class="theme-option" data-theme="midnight"><span class="swatch-dot" style="background:#4DD4FF;"></span>Midnight</button>
+          </div>
+        </div>
+      </div>
       <button class="btn btn-header-fill btn-small" id="signInBtn" type="button">Sign in</button>
       <button class="btn btn-header btn-small cart-toggle" id="cartToggle" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
@@ -85,7 +108,7 @@ FOOT = """
     <div class="footer-grid">
       <div class="footer-about">
         <div class="brand" style="margin-bottom:16px;">
-          <div class="brand-mark">KS</div>
+          <img src="assets/logo.png" alt="Khyber Spice Invader" style="width:44px; height:44px; border-radius:50%; object-fit:cover; flex-shrink:0;">
           <div class="brand-text">
             <span class="name">Khyber Spice Invader</span>
             <span class="tag">Royal Oak · Est. 2005</span>
@@ -147,7 +170,15 @@ FOOT = """
   <div class="product-modal" id="productModal"></div>
 </div>
 
-<button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">&#128172;</button>
+<div class="bot-teaser" id="botTeaser">
+  <button type="button" id="botTeaserClose" aria-label="Dismiss">&times;</button>
+  &#128075; Need a hand? Ask me about stock, delivery, or even cooking tips.
+</div>
+<button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">
+  <span class="bl-ring"></span>
+  <span class="bl-icon">&#128172;</span>
+  <span class="bl-label">Ask Khyber Bot</span>
+</button>
 <div class="bot-panel" id="botPanel">
   <div class="bot-head">
     <div>
@@ -159,8 +190,8 @@ FOOT = """
   <div class="bot-messages" id="botMessages"></div>
   <div class="bot-suggestions">
     <button type="button">Store hours?</button>
-    <button type="button">Delivery cost?</button>
-    <button type="button">Where are you located?</button>
+    <button type="button">Best rice for yellow daal?</button>
+    <button type="button">How long to cook rice?</button>
   </div>
   <div class="bot-input-row">
     <input type="text" id="botInput" placeholder="Ask a question...">
@@ -172,6 +203,7 @@ FOOT = """
 <script src="js/main.js"></script>
 <script src="js/bot.js"></script>
 <script src="js/auth.js"></script>
+<script src="js/spice-canvas.js"></script>
 </body>
 </html>
 """
@@ -186,6 +218,7 @@ def write(path, html):
 # ------------------------------------------------------------------
 home_body = """
 <section class="hero">
+  <canvas id="spiceCanvas" aria-hidden="true"></canvas>
   <div class="wrap">
     <div class="stamp">Est. 2005<br>Royal Oak<br>Auckland</div>
     <div class="hero-eyebrow">Indian &middot; Sri Lankan &middot; Pakistani &middot; Iranian &middot; Arabic Grocery</div>
@@ -411,6 +444,7 @@ function openProductModal({ name, price, unit, category, outOfStock }){
   const modal = document.getElementById('productModal');
   const presets = [1,2,3,5,10];
   let qty = 1;
+  const related = ALL.products.filter(p => p.category === category && p.name !== name).slice(0, 3);
   function render(){
     modal.innerHTML = `
       <button class="pm-close" aria-label="Close">&times;</button>
@@ -421,6 +455,7 @@ function openProductModal({ name, price, unit, category, outOfStock }){
         <div class="pm-cat">${labelFor(category)}</div>
         <h3>${name}</h3>
         <div class="pm-baseprice">$${price.toFixed(2)} per ${unit}</div>
+        <div class="pm-multiple-note">This item is sold in multiples of ${unit}. Need more? Just bump the quantity below.</div>
         <div class="pm-weight-label">Choose quantity</div>
         <div class="pm-presets">
           ${presets.map(n => `<button type="button" data-n="${n}" class="${n===qty?'active':''}">${n} &times; ${unit}</button>`).join('')}
@@ -432,10 +467,27 @@ function openProductModal({ name, price, unit, category, outOfStock }){
         <button class="btn btn-primary" style="width:100%; justify-content:center;" ${outOfStock ? 'disabled' : ''}>
           ${outOfStock ? 'Sold out' : 'Add to Basket'}
         </button>
+        ${related.length ? `
+        <div class="pm-related">
+          <h5>You may also like</h5>
+          <div class="pm-related-grid">
+            ${related.map(r => `
+              <div class="pm-related-item" data-name="${r.name.replace(/"/g,'&quot;')}" data-price="${r.price}" data-unit="${r.unit}" data-category="${r.category}">
+                <div class="photo"><img src="${guessImageUrl(r.name)}" alt="${r.name}" onerror="this.replaceWith(iconFallback('${r.category}'))"></div>
+                <div class="rn">${r.name}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
       </div>
     `;
     modal.querySelectorAll('.pm-presets button').forEach(b => b.addEventListener('click', () => { qty = parseInt(b.dataset.n); render(); }));
     modal.querySelector('.pm-close').addEventListener('click', closeProductModal);
+    modal.querySelectorAll('.pm-related-item').forEach(el => {
+      el.addEventListener('click', () => openProductModal({
+        name: el.dataset.name, price: parseFloat(el.dataset.price), unit: el.dataset.unit, category: el.dataset.category, outOfStock: false
+      }));
+    });
     if (!outOfStock){
       modal.querySelector('.btn-primary').addEventListener('click', () => {
         addToCart({ name, price: price * qty, unit: `${qty} \u00d7 ${unit}` });

@@ -114,6 +114,24 @@ and renders a disabled "Checkout — coming soon" button. To wire up Stripe:
 
 Happy to build this out with you when you're ready — just ask.
 
+## 8. Colour theme switcher
+
+Click the palette icon (🎨) in the header — four themes to swap between
+instantly, on every page: **Classic** (default, matches your logo's
+orange), **Light**, **Sunset**, and **Midnight**. The choice is saved per
+visitor (localStorage) and applied before the page paints, so there's no
+flash of the wrong theme on reload. All theme colours live at the top of
+`css/styles.css` under `:root` and the `[data-theme="..."]` blocks — add
+a fifth theme by copying one of those blocks and adding a matching
+button in the `themeOptions` markup in `build.py`.
+
+## 9. VIP card
+
+The orange strip under the header ("Ask in-store about our VIP Customer
+Card") reflects the real promo card you sent. If you want it to link
+somewhere (a dedicated rewards page, a sign-up form) let me know and
+I'll build that out.
+
 ## Notes
 
 - Contact form currently shows a placeholder alert on submit. To make it
