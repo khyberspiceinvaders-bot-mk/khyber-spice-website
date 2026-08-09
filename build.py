@@ -15,6 +15,7 @@ def head(title, desc, active):
         ("about.html", "About"),
         ("shipping.html", "Shipping"),
         ("contact.html", "Contact"),
+        ("account.html", "Account"),
     ]
     nav_html = "\n".join(
         f'<a href="{href}" class="{"active" if href==active else ""}">{label}</a>'
@@ -31,6 +32,17 @@ def head(title, desc, active):
 </head>
 <body>
 <div class="grain"></div>
+<div class="ambient">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <span class="icon" style="top:12%; left:8%; font-size:46px; animation-delay:-2s;">&#127798;</span>
+  <span class="icon" style="top:22%; right:12%; font-size:38px; animation-delay:-8s;">&#127806;</span>
+  <span class="icon" style="top:55%; left:5%; font-size:34px; animation-delay:-4s;">&#129381;</span>
+  <span class="icon" style="top:68%; right:8%; font-size:44px; animation-delay:-11s;">&#127861;</span>
+  <span class="icon" style="top:85%; left:18%; font-size:30px; animation-delay:-6s;">&#127850;</span>
+  <span class="icon" style="top:38%; right:30%; font-size:28px; animation-delay:-14s;">&#129347;</span>
+</div>
 
 <div class="utility-bar">
   <div class="wrap">
@@ -48,11 +60,17 @@ def head(title, desc, active):
         <span class="tag">Royal Oak · Est. 2005</span>
       </div>
     </a>
+    <div class="header-search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="headerSearchInput" placeholder="Search the shop...">
+    </div>
     <nav class="main-nav" id="mainNav">
       {nav_html}
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
+      <button class="btn btn-outline btn-small" id="signInBtn" type="button">Sign in</button>
       <button class="btn btn-outline btn-small cart-toggle" id="cartToggle" type="button">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
       </button>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
@@ -125,7 +143,31 @@ FOOT = """
   </div>
 </aside>
 
+<button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">&#128172;</button>
+<div class="bot-panel" id="botPanel">
+  <div class="bot-head">
+    <div>
+      <h4>Khyber Bot</h4>
+      <span>Usually replies instantly</span>
+    </div>
+    <button class="bot-close" id="botClose" type="button" aria-label="Close chat">&times;</button>
+  </div>
+  <div class="bot-messages" id="botMessages"></div>
+  <div class="bot-suggestions">
+    <button type="button">Store hours?</button>
+    <button type="button">Delivery cost?</button>
+    <button type="button">Where are you located?</button>
+  </div>
+  <div class="bot-input-row">
+    <input type="text" id="botInput" placeholder="Ask a question...">
+    <button id="botSend" type="button" aria-label="Send">&#8594;</button>
+  </div>
+</div>
+
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
 <script src="js/main.js"></script>
+<script src="js/bot.js"></script>
+<script src="js/auth.js"></script>
 </body>
 </html>
 """
@@ -298,24 +340,71 @@ function renderGrid(){
     return;
   }
 
-  grid.innerHTML = items.map(p => `
-    <div class="product-card">
+  grid.innerHTML = items.map((p, i) => {
+    const imgId = 'img_' + i;
+    return `
+    <div class="product-card" data-name="${p.name.replace(/"/g,'&quot;')}" data-price="${p.price}" data-unit="${p.unit}" data-category="${p.category}">
       ${p.stock === 'out' ? '<span class="badge badge-out">Sold out</span>' : (p.note ? '<span class="badge badge-sale">' + p.note + '</span>' : '')}
-      <div class="swatch" style="background:${accentFor(p.category)}22;"></div>
+      <div class="photo">
+        <img id="${imgId}" src="${guessImageUrl(p.name)}" alt="${p.name}"
+             onerror="this.replaceWith(iconFallback('${p.category}'))" loading="lazy">
+      </div>
       <h4>${p.name}</h4>
-      <div class="unit">${p.unit} &middot; ${labelFor(p.category)}</div>
+      <div class="unit qty-readout">1 &times; ${p.unit}</div>
+      <div class="qty-stepper">
+        <button type="button" class="qminus">&minus;</button>
+        <span class="qval">1</span>
+        <button type="button" class="qplus">+</button>
+      </div>
       <div class="price-row">
-        <span class="price">$${p.price.toFixed(2)}</span>
-        <button class="add-btn" ${p.stock==='out'?'disabled':''} onclick='addToCart(${JSON.stringify(p)})'>+</button>
+        <span class="price pval">$${p.price.toFixed(2)}</span>
+        <button class="add-btn" ${p.stock==='out'?'disabled':''}>+</button>
       </div>
     </div>
-  `).join('');
+  `; }).join('');
+
+  grid.querySelectorAll('.product-card').forEach(card => {
+    const name = card.dataset.name, price = parseFloat(card.dataset.price), unit = card.dataset.unit;
+    const category = card.dataset.category;
+    let qty = 1;
+    const qvalEl = card.querySelector('.qval');
+    const readoutEl = card.querySelector('.qty-readout');
+    const priceEl = card.querySelector('.pval');
+    function refresh(){
+      qvalEl.textContent = qty;
+      readoutEl.textContent = `${qty} \u00d7 ${unit}`;
+      priceEl.textContent = '$' + (price * qty).toFixed(2);
+    }
+    card.querySelector('.qminus').addEventListener('click', () => { if (qty > 1){ qty--; refresh(); } });
+    card.querySelector('.qplus').addEventListener('click', () => { qty++; refresh(); });
+    card.querySelector('.add-btn').addEventListener('click', () => {
+      addToCart({ name, price: price * qty, unit: `${qty} \u00d7 ${unit}` });
+      qty = 1; refresh();
+    });
+  });
+}
+
+const CATEGORY_GLYPH = {
+  spices: '&#127798;', 'daals-lentils': '&#129381;', 'rice-flour': '&#127806;',
+  'ghee-oil': '&#129347;', 'pickles-chutney': '&#127850;', 'personal-care': '&#10024;',
+  beverages: '&#127861;', snacks: '&#127871;', 'misc-grocery': '&#129371;',
+  'instant-food': '&#127858;', subcontinental: '&#127760;'
+};
+function iconFallback(category){
+  const span = document.createElement('span');
+  span.className = 'icon-fallback';
+  span.style.fontSize = '32px';
+  span.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
+  return span;
 }
 
 fetch('data/products.json').then(r=>r.json()).then(data=>{
   ALL = data;
   const hash = decodeURIComponent(location.hash.replace('#',''));
   if (hash && ALL.categories.some(c=>c.slug===hash)) state.cat = hash;
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q');
+  if (q){ state.q = q; document.getElementById('searchInput').value = q; }
   renderFilters();
   renderGrid();
 });
@@ -441,5 +530,19 @@ contact_body = """
 </section>
 """
 write("contact.html", head("Contact — Khyber Spice Invader", "Get in touch with Khyber Spice Invader, Royal Oak — phone, email and store hours.", "contact.html") + contact_body + FOOT)
+
+# ------------------------------------------------------------------
+# ACCOUNT
+# ------------------------------------------------------------------
+account_body = """
+<section class="info-page">
+  <div class="wrap">
+    <h1>Your Account</h1>
+    <p class="lede">Sign in to save your details for checkout and, once it's live, track your orders.</p>
+    <div id="accountPanel"></div>
+  </div>
+</section>
+"""
+write("account.html", head("Account — Khyber Spice Invader", "Sign in to your Khyber Spice Invader account.", "account.html") + account_body + FOOT)
 
 print("\\nBuild complete.")

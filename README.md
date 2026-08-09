@@ -59,7 +59,39 @@ file. `stock` is `"in"` or `"out"`. `note` is optional (shows as a small
 badge, e.g. `"On special"`). No rebuild needed — the shop page reads this
 file directly at runtime.
 
-## 4. Adding Stripe later
+## 4. Turning on real sign-in (Netlify Identity)
+
+The "Sign in" button and Account page are wired to **Netlify Identity** —
+a real, free authentication system built into Netlify, no custom backend
+needed. To activate it:
+
+1. Netlify dashboard → your site → **Site configuration → Identity → Enable Identity**
+2. That's it — "Sign in" will now open a real signup/login form, and
+   signed-in users see their name/email on the Account page.
+3. Order tracking on that page is intentionally a placeholder until
+   Stripe checkout exists (see below) — there's no order to track yet.
+
+## 5. How product photos work
+
+Rather than manually attaching an image to all 86 products, each product
+card guesses the photo URL from the original store's predictable naming
+pattern (`PRODUCT_NAME_medium.jpg`) and silently falls back to a category
+icon if that guess doesn't resolve. Real photos will show for products
+whose name matches the CDN file exactly; the rest show a clean icon
+instead of a broken image. As you get proper product photography, replace
+this with real `image` URLs per product in `data/products.json`.
+
+## 6. The Khyber Bot
+
+`js/bot.js` is a lightweight rule-based FAQ assistant (hours, delivery,
+locations, stock, etc.) — it runs entirely in the browser, no API key or
+backend required. Anything it doesn't recognise offers an "Email the
+store" button that opens a pre-filled email to sales@khyberspice.co.nz.
+To upgrade it to a real AI model later, replace `answerQuery()` with a
+call to a serverless function that talks to an LLM API (never call an AI
+API directly from browser JS — that would expose your API key).
+
+## 7. Adding Stripe later
 
 The basket (`js/main.js`) already tracks items and totals in `localStorage`
 and renders a disabled "Checkout — coming soon" button. To wire up Stripe:

@@ -7,6 +7,14 @@
 
 const CART_KEY = 'khyber_cart_v1';
 
+// Guess the live product photo URL from the original store's predictable
+// CDN naming pattern. If it 404s, callers fall back to an icon (see
+// data-fallback wiring in shop.js) — so a wrong guess never shows broken art.
+function guessImageUrl(name){
+  const slug = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  return `https://www.khyberspice.co.nz/cdn/shop/products/${slug}_medium.jpg`;
+}
+
 function getCart(){
   try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
   catch(e){ return []; }
@@ -80,4 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cartToggle')?.addEventListener('click', openCart);
   document.getElementById('cartClose')?.addEventListener('click', closeCart);
   document.getElementById('cartOverlay')?.addEventListener('click', closeCart);
+
+  const headerSearch = document.getElementById('headerSearchInput');
+  headerSearch?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && headerSearch.value.trim()){
+      location.href = 'products.html?q=' + encodeURIComponent(headerSearch.value.trim());
+    }
+  });
 });
