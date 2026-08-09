@@ -73,13 +73,21 @@ needed. To activate it:
 
 ## 5. How product photos work
 
-Rather than manually attaching an image to all 86 products, each product
-card guesses the photo URL from the original store's predictable naming
-pattern (`PRODUCT_NAME_medium.jpg`) and silently falls back to a category
-icon if that guess doesn't resolve. Real photos will show for products
-whose name matches the CDN file exactly; the rest show a clean icon
-instead of a broken image. As you get proper product photography, replace
-this with real `image` URLs per product in `data/products.json`.
+Every card first tries the real Khyber Spice photo (guessed from the
+original store's CDN naming pattern). I deliberately did **not** hotlink
+random unlicensed images from the internet for the fallback — that's a
+real copyright risk on a live commercial site. Instead, products without
+a matching real photo show a designed gradient + icon card in your brand
+colours, not a broken image or a plain generic dummy image.
+
+**To get real photos for everything (~10 minutes):** download free,
+commercial-use images from a site like pexels.com or pixabay.com
+(search e.g. "turmeric powder", "basmati rice", "cardamom pods") that
+you're comfortable using, save them into a new `assets/products/` folder
+using the exact product name as the filename (e.g.
+`assets/products/BLACK_PEPPER_WHOLE.jpg`), and tell me — I'll wire the
+grid to check that folder first, ahead of the CDN guess and the gradient
+fallback.
 
 ## 6. The Khyber Bot
 

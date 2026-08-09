@@ -50,8 +50,8 @@
 <a href="account.html" class="">Account</a>
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
-      <button class="btn btn-outline btn-small" id="signInBtn" type="button">Sign in</button>
-      <button class="btn btn-outline btn-small cart-toggle" id="cartToggle" type="button">
+      <button class="btn btn-header-fill btn-small" id="signInBtn" type="button">Sign in</button>
+      <button class="btn btn-header btn-small cart-toggle" id="cartToggle" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
       </button>
@@ -155,6 +155,10 @@
   </div>
 </aside>
 
+<div class="product-modal-overlay" id="productModalOverlay">
+  <div class="product-modal" id="productModal"></div>
+</div>
+
 <button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">&#128172;</button>
 <div class="bot-panel" id="botPanel">
   <div class="bot-head">
@@ -236,11 +240,11 @@ function renderGrid(){
     return `
     <div class="product-card" data-name="${p.name.replace(/"/g,'&quot;')}" data-price="${p.price}" data-unit="${p.unit}" data-category="${p.category}">
       ${p.stock === 'out' ? '<span class="badge badge-out">Sold out</span>' : (p.note ? '<span class="badge badge-sale">' + p.note + '</span>' : '')}
-      <div class="photo">
+      <div class="photo" data-open-modal>
         <img id="${imgId}" src="${guessImageUrl(p.name)}" alt="${p.name}"
              onerror="this.replaceWith(iconFallback('${p.category}'))" loading="lazy">
       </div>
-      <h4>${p.name}</h4>
+      <h4 data-open-modal>${p.name}</h4>
       <div class="unit qty-readout">1 &times; ${p.unit}</div>
       <div class="qty-stepper">
         <button type="button" class="qminus">&minus;</button>
@@ -256,7 +260,7 @@ function renderGrid(){
 
   grid.querySelectorAll('.product-card').forEach(card => {
     const name = card.dataset.name, price = parseFloat(card.dataset.price), unit = card.dataset.unit;
-    const category = card.dataset.category;
+    const category = card.dataset.category, stock = card.dataset.name ? undefined : undefined;
     let qty = 1;
     const qvalEl = card.querySelector('.qval');
     const readoutEl = card.querySelector('.qty-readout');
@@ -266,11 +270,15 @@ function renderGrid(){
       readoutEl.textContent = `${qty} × ${unit}`;
       priceEl.textContent = '$' + (price * qty).toFixed(2);
     }
-    card.querySelector('.qminus').addEventListener('click', () => { if (qty > 1){ qty--; refresh(); } });
-    card.querySelector('.qplus').addEventListener('click', () => { qty++; refresh(); });
-    card.querySelector('.add-btn').addEventListener('click', () => {
+    card.querySelector('.qminus').addEventListener('click', (e) => { e.stopPropagation(); if (qty > 1){ qty--; refresh(); } });
+    card.querySelector('.qplus').addEventListener('click', (e) => { e.stopPropagation(); qty++; refresh(); });
+    card.querySelector('.add-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
       addToCart({ name, price: price * qty, unit: `${qty} × ${unit}` });
       qty = 1; refresh();
+    });
+    card.querySelectorAll('[data-open-modal]').forEach(el => {
+      el.addEventListener('click', () => openProductModal({ name, price, unit, category, outOfStock: card.querySelector('.badge-out') !== null }));
     });
   });
 }
@@ -282,12 +290,59 @@ const CATEGORY_GLYPH = {
   'instant-food': '&#127858;', subcontinental: '&#127760;'
 };
 function iconFallback(category){
-  const span = document.createElement('span');
-  span.className = 'icon-fallback';
-  span.style.fontSize = '32px';
-  span.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
-  return span;
+  const div = document.createElement('div');
+  const accent = (ALL.categories.find(c=>c.slug===category) || {}).accent || 'turmeric';
+  div.className = 'icon-fallback photo-grad-' + accent;
+  div.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
+  return div;
 }
+
+function openProductModal({ name, price, unit, category, outOfStock }){
+  const overlay = document.getElementById('productModalOverlay');
+  const modal = document.getElementById('productModal');
+  const presets = [1,2,3,5,10];
+  let qty = 1;
+  function render(){
+    modal.innerHTML = `
+      <button class="pm-close" aria-label="Close">&times;</button>
+      <div class="pm-photo">
+        <img src="${guessImageUrl(name)}" alt="${name}" onerror="this.replaceWith(iconFallback('${category}'))">
+      </div>
+      <div class="pm-body">
+        <div class="pm-cat">${labelFor(category)}</div>
+        <h3>${name}</h3>
+        <div class="pm-baseprice">$${price.toFixed(2)} per ${unit}</div>
+        <div class="pm-weight-label">Choose quantity</div>
+        <div class="pm-presets">
+          ${presets.map(n => `<button type="button" data-n="${n}" class="${n===qty?'active':''}">${n} &times; ${unit}</button>`).join('')}
+        </div>
+        <div class="pm-total-row">
+          <span>Total (${qty} &times; ${unit})</span>
+          <span class="amt">$${(price*qty).toFixed(2)}</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" ${outOfStock ? 'disabled' : ''}>
+          ${outOfStock ? 'Sold out' : 'Add to Basket'}
+        </button>
+      </div>
+    `;
+    modal.querySelectorAll('.pm-presets button').forEach(b => b.addEventListener('click', () => { qty = parseInt(b.dataset.n); render(); }));
+    modal.querySelector('.pm-close').addEventListener('click', closeProductModal);
+    if (!outOfStock){
+      modal.querySelector('.btn-primary').addEventListener('click', () => {
+        addToCart({ name, price: price * qty, unit: `${qty} × ${unit}` });
+        closeProductModal();
+      });
+    }
+  }
+  render();
+  overlay.classList.add('open');
+}
+function closeProductModal(){
+  document.getElementById('productModalOverlay').classList.remove('open');
+}
+document.getElementById('productModalOverlay')?.addEventListener('click', (e) => {
+  if (e.target.id === 'productModalOverlay') closeProductModal();
+});
 
 fetch('data/products.json').then(r=>r.json()).then(data=>{
   ALL = data;

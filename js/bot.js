@@ -10,7 +10,7 @@
 
 const BOT_FAQ = [
   { keys: ['hour', 'open', 'close', 'time'], a: "We're open every day, 9:00am to 8:30pm, at both stores." },
-  { keys: ['where', 'address', 'location', 'royal oak', 'otahuhu', 'ōtāhuhu'], a: "Royal Oak: 822 Manukau Road, Auckland. Ōtāhuhu: 539 Great South Road, Auckland. Both on the About page with maps." },
+  { keys: ['where', 'address', 'location', 'royal oak'], a: "We're at 822 Manukau Road, Royal Oak, Auckland — see the About page for the map." },
   { keys: ['deliver', 'shipping', 'ship', 'courier'], a: "We ship anywhere in New Zealand — rates depend on weight and region, see the Shipping page for the full table. Pickup from either store is always free." },
   { keys: ['phone', 'call', 'contact', 'number'], a: "You can call us on 09 625 1766 or 09 624 1365, or email sales@khyberspice.co.nz." },
   { keys: ['stripe', 'pay', 'payment', 'checkout', 'card online', 'buy online'], a: "Online checkout is being set up right now — for the moment, add items to your basket and call the store to place the order over the phone." },

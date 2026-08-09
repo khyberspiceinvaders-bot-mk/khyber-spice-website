@@ -50,8 +50,8 @@
 <a href="account.html" class="">Account</a>
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
-      <button class="btn btn-outline btn-small" id="signInBtn" type="button">Sign in</button>
-      <button class="btn btn-outline btn-small cart-toggle" id="cartToggle" type="button">
+      <button class="btn btn-header-fill btn-small" id="signInBtn" type="button">Sign in</button>
+      <button class="btn btn-header btn-small cart-toggle" id="cartToggle" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
       </button>
@@ -70,19 +70,13 @@
       <p>We hope you have a hassle-free shopping experience. We are certified &ldquo;A&rdquo; for our store hygiene by the Auckland Council, and we take pride in maintaining a clean and hygienic shopping environment at both our stores.</p>
     </div>
 
-    <h2 style="font-family:var(--font-display); font-size:26px; margin:52px 0 24px;">Our Locations</h2>
-    <div class="locations-grid">
+    <h2 style="font-family:var(--font-display); font-size:26px; margin:52px 0 24px;">Visit Us</h2>
+    <div class="locations-grid" style="grid-template-columns:1fr;">
       <div class="location-card">
         <h3>Khyber Spice Invader &mdash; Royal Oak</h3>
         <p>822 Manukau Road, Royal Oak, Auckland 1061, New Zealand</p>
         <p>Phone: <a href="tel:+6496251766" style="color:var(--turmeric);">09 625 1766</a></p>
         <iframe loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d797.5162421535671!2d174.776662!3d-36.91271099999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d48a64510d8fd%3A0x107e1c7b774f3610!2sKyber+Spice+Invader+%26+Vege+Oasis!5e0!3m2!1sen!2s!4v1407750401782"></iframe>
-      </div>
-      <div class="location-card">
-        <h3>Khyber Spice &mdash; &Ocirc;t&#257;huhu</h3>
-        <p>539 Great South Road, &Ocirc;t&#257;huhu, Auckland 1062, New Zealand</p>
-        <p>Phone: <a href="tel:+6492700556" style="color:var(--turmeric);">09 270 0556</a></p>
-        <iframe loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3188.5914355091536!2d174.84513173121337!3d-36.9479292828257!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d4ebd3aee2cc5%3A0xa6c754feec45d249!2s539+Great+South+Rd%2C+Otahuhu%2C+Auckland+1062%2C+New+Zealand!5e0!3m2!1sen!2s!4v1407750601567"></iframe>
       </div>
     </div>
   </div>
@@ -150,6 +144,10 @@
     <p class="cart-note">Online payment via Stripe is being set up. For now, call the store to place a phone order for anything in your basket.</p>
   </div>
 </aside>
+
+<div class="product-modal-overlay" id="productModalOverlay">
+  <div class="product-modal" id="productModal"></div>
+</div>
 
 <button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">&#128172;</button>
 <div class="bot-panel" id="botPanel">

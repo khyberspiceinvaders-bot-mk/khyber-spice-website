@@ -50,8 +50,8 @@
 <a href="account.html" class="">Account</a>
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
-      <button class="btn btn-outline btn-small" id="signInBtn" type="button">Sign in</button>
-      <button class="btn btn-outline btn-small cart-toggle" id="cartToggle" type="button">
+      <button class="btn btn-header-fill btn-small" id="signInBtn" type="button">Sign in</button>
+      <button class="btn btn-header btn-small cart-toggle" id="cartToggle" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
       </button>
@@ -157,6 +157,10 @@
     <p class="cart-note">Online payment via Stripe is being set up. For now, call the store to place a phone order for anything in your basket.</p>
   </div>
 </aside>
+
+<div class="product-modal-overlay" id="productModalOverlay">
+  <div class="product-modal" id="productModal"></div>
+</div>
 
 <button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">&#128172;</button>
 <div class="bot-panel" id="botPanel">

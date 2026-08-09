@@ -68,8 +68,8 @@ def head(title, desc, active):
       {nav_html}
     </nav>
     <div style="display:flex; align-items:center; gap:10px;">
-      <button class="btn btn-outline btn-small" id="signInBtn" type="button">Sign in</button>
-      <button class="btn btn-outline btn-small cart-toggle" id="cartToggle" type="button">
+      <button class="btn btn-header-fill btn-small" id="signInBtn" type="button">Sign in</button>
+      <button class="btn btn-header btn-small cart-toggle" id="cartToggle" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
         Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
       </button>
@@ -142,6 +142,10 @@ FOOT = """
     <p class="cart-note">Online payment via Stripe is being set up. For now, call the store to place a phone order for anything in your basket.</p>
   </div>
 </aside>
+
+<div class="product-modal-overlay" id="productModalOverlay">
+  <div class="product-modal" id="productModal"></div>
+</div>
 
 <button class="bot-launcher" id="botLauncher" type="button" aria-label="Open Khyber Bot">&#128172;</button>
 <div class="bot-panel" id="botPanel">
@@ -223,7 +227,7 @@ home_body = """
     </div>
     <div class="ticket">
       <div class="row"><span>Founded</span><span>2005</span></div>
-      <div class="row"><span>Locations</span><span>Royal Oak &amp; &Ocirc;t&#257;huhu</span></div>
+      <div class="row"><span>Locations</span><span>Royal Oak, Auckland</span></div>
       <div class="row"><span>Hygiene grade</span><span>&ldquo;A&rdquo; &mdash; Auckland Council</span></div>
       <div class="row"><span>Delivery area</span><span>Nationwide, NZ</span></div>
       <div class="row"><span>Specialty</span><span>Indian &middot; Sri Lankan &middot; Pakistani &middot; Iranian &middot; Arabic</span></div>
@@ -345,11 +349,11 @@ function renderGrid(){
     return `
     <div class="product-card" data-name="${p.name.replace(/"/g,'&quot;')}" data-price="${p.price}" data-unit="${p.unit}" data-category="${p.category}">
       ${p.stock === 'out' ? '<span class="badge badge-out">Sold out</span>' : (p.note ? '<span class="badge badge-sale">' + p.note + '</span>' : '')}
-      <div class="photo">
+      <div class="photo" data-open-modal>
         <img id="${imgId}" src="${guessImageUrl(p.name)}" alt="${p.name}"
              onerror="this.replaceWith(iconFallback('${p.category}'))" loading="lazy">
       </div>
-      <h4>${p.name}</h4>
+      <h4 data-open-modal>${p.name}</h4>
       <div class="unit qty-readout">1 &times; ${p.unit}</div>
       <div class="qty-stepper">
         <button type="button" class="qminus">&minus;</button>
@@ -365,7 +369,7 @@ function renderGrid(){
 
   grid.querySelectorAll('.product-card').forEach(card => {
     const name = card.dataset.name, price = parseFloat(card.dataset.price), unit = card.dataset.unit;
-    const category = card.dataset.category;
+    const category = card.dataset.category, stock = card.dataset.name ? undefined : undefined;
     let qty = 1;
     const qvalEl = card.querySelector('.qval');
     const readoutEl = card.querySelector('.qty-readout');
@@ -375,11 +379,15 @@ function renderGrid(){
       readoutEl.textContent = `${qty} \u00d7 ${unit}`;
       priceEl.textContent = '$' + (price * qty).toFixed(2);
     }
-    card.querySelector('.qminus').addEventListener('click', () => { if (qty > 1){ qty--; refresh(); } });
-    card.querySelector('.qplus').addEventListener('click', () => { qty++; refresh(); });
-    card.querySelector('.add-btn').addEventListener('click', () => {
+    card.querySelector('.qminus').addEventListener('click', (e) => { e.stopPropagation(); if (qty > 1){ qty--; refresh(); } });
+    card.querySelector('.qplus').addEventListener('click', (e) => { e.stopPropagation(); qty++; refresh(); });
+    card.querySelector('.add-btn').addEventListener('click', (e) => {
+      e.stopPropagation();
       addToCart({ name, price: price * qty, unit: `${qty} \u00d7 ${unit}` });
       qty = 1; refresh();
+    });
+    card.querySelectorAll('[data-open-modal]').forEach(el => {
+      el.addEventListener('click', () => openProductModal({ name, price, unit, category, outOfStock: card.querySelector('.badge-out') !== null }));
     });
   });
 }
@@ -391,12 +399,59 @@ const CATEGORY_GLYPH = {
   'instant-food': '&#127858;', subcontinental: '&#127760;'
 };
 function iconFallback(category){
-  const span = document.createElement('span');
-  span.className = 'icon-fallback';
-  span.style.fontSize = '32px';
-  span.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
-  return span;
+  const div = document.createElement('div');
+  const accent = (ALL.categories.find(c=>c.slug===category) || {}).accent || 'turmeric';
+  div.className = 'icon-fallback photo-grad-' + accent;
+  div.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
+  return div;
 }
+
+function openProductModal({ name, price, unit, category, outOfStock }){
+  const overlay = document.getElementById('productModalOverlay');
+  const modal = document.getElementById('productModal');
+  const presets = [1,2,3,5,10];
+  let qty = 1;
+  function render(){
+    modal.innerHTML = `
+      <button class="pm-close" aria-label="Close">&times;</button>
+      <div class="pm-photo">
+        <img src="${guessImageUrl(name)}" alt="${name}" onerror="this.replaceWith(iconFallback('${category}'))">
+      </div>
+      <div class="pm-body">
+        <div class="pm-cat">${labelFor(category)}</div>
+        <h3>${name}</h3>
+        <div class="pm-baseprice">$${price.toFixed(2)} per ${unit}</div>
+        <div class="pm-weight-label">Choose quantity</div>
+        <div class="pm-presets">
+          ${presets.map(n => `<button type="button" data-n="${n}" class="${n===qty?'active':''}">${n} &times; ${unit}</button>`).join('')}
+        </div>
+        <div class="pm-total-row">
+          <span>Total (${qty} &times; ${unit})</span>
+          <span class="amt">$${(price*qty).toFixed(2)}</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" ${outOfStock ? 'disabled' : ''}>
+          ${outOfStock ? 'Sold out' : 'Add to Basket'}
+        </button>
+      </div>
+    `;
+    modal.querySelectorAll('.pm-presets button').forEach(b => b.addEventListener('click', () => { qty = parseInt(b.dataset.n); render(); }));
+    modal.querySelector('.pm-close').addEventListener('click', closeProductModal);
+    if (!outOfStock){
+      modal.querySelector('.btn-primary').addEventListener('click', () => {
+        addToCart({ name, price: price * qty, unit: `${qty} \u00d7 ${unit}` });
+        closeProductModal();
+      });
+    }
+  }
+  render();
+  overlay.classList.add('open');
+}
+function closeProductModal(){
+  document.getElementById('productModalOverlay').classList.remove('open');
+}
+document.getElementById('productModalOverlay')?.addEventListener('click', (e) => {
+  if (e.target.id === 'productModalOverlay') closeProductModal();
+});
 
 fetch('data/products.json').then(r=>r.json()).then(data=>{
   ALL = data;
@@ -431,19 +486,13 @@ about_body = """
       <p>We hope you have a hassle-free shopping experience. We are certified &ldquo;A&rdquo; for our store hygiene by the Auckland Council, and we take pride in maintaining a clean and hygienic shopping environment at both our stores.</p>
     </div>
 
-    <h2 style="font-family:var(--font-display); font-size:26px; margin:52px 0 24px;">Our Locations</h2>
-    <div class="locations-grid">
+    <h2 style="font-family:var(--font-display); font-size:26px; margin:52px 0 24px;">Visit Us</h2>
+    <div class="locations-grid" style="grid-template-columns:1fr;">
       <div class="location-card">
         <h3>Khyber Spice Invader &mdash; Royal Oak</h3>
         <p>822 Manukau Road, Royal Oak, Auckland 1061, New Zealand</p>
         <p>Phone: <a href="tel:+6496251766" style="color:var(--turmeric);">09 625 1766</a></p>
         <iframe loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d797.5162421535671!2d174.776662!3d-36.91271099999995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d48a64510d8fd%3A0x107e1c7b774f3610!2sKyber+Spice+Invader+%26+Vege+Oasis!5e0!3m2!1sen!2s!4v1407750401782"></iframe>
-      </div>
-      <div class="location-card">
-        <h3>Khyber Spice &mdash; &Ocirc;t&#257;huhu</h3>
-        <p>539 Great South Road, &Ocirc;t&#257;huhu, Auckland 1062, New Zealand</p>
-        <p>Phone: <a href="tel:+6492700556" style="color:var(--turmeric);">09 270 0556</a></p>
-        <iframe loading="lazy" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3188.5914355091536!2d174.84513173121337!3d-36.9479292828257!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6d0d4ebd3aee2cc5%3A0xa6c754feec45d249!2s539+Great+South+Rd%2C+Otahuhu%2C+Auckland+1062%2C+New+Zealand!5e0!3m2!1sen!2s!4v1407750601567"></iframe>
       </div>
     </div>
   </div>
