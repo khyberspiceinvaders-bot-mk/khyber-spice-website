@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shop — Khyber Spice Invader</title>
+<meta name="description" content="Browse spices, daals, rice, ghee, snacks and more from Khyber Spice Invader, Royal Oak.">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="grain"></div>
+
+<div class="utility-bar">
+  <div class="wrap">
+    <span>822 Manukau Road, Royal Oak, Auckland <span class="dot">·</span> Open Mon&ndash;Sun 9:00am&ndash;8:30pm</span>
+    <span><a href="tel:+6496251766">09 625 1766</a></span>
+  </div>
+</div>
+
+<header class="site-header">
+  <div class="wrap">
+    <a href="index.html" class="brand">
+      <div class="brand-mark">KS</div>
+      <div class="brand-text">
+        <span class="name">Khyber Spice Invader</span>
+        <span class="tag">Royal Oak · Est. 2005</span>
+      </div>
+    </a>
+    <nav class="main-nav" id="mainNav">
+      <a href="index.html" class="">Home</a>
+<a href="products.html" class="active">Shop</a>
+<a href="about.html" class="">About</a>
+<a href="shipping.html" class="">Shipping</a>
+<a href="contact.html" class="">Contact</a>
+    </nav>
+    <div style="display:flex; align-items:center; gap:10px;">
+      <button class="btn btn-outline btn-small cart-toggle" id="cartToggle" type="button">
+        Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
+      </button>
+      <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
+    </div>
+  </div>
+</header>
+
+<section class="info-page">
+  <div class="wrap">
+    <h1>The Shop</h1>
+    <p class="lede">Search or filter by aisle. Prices shown are for pickup from the Royal Oak store &mdash; online checkout is coming soon, call in the meantime to arrange delivery.</p>
+
+    <div class="shop-layout">
+      <aside class="shop-sidebar">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="searchInput" placeholder="Search products...">
+        </div>
+        <div class="filter-block">
+          <h4>Aisles</h4>
+          <div class="cat-filter-list" id="catFilterList"></div>
+        </div>
+        <div class="filter-block">
+          <h4>Availability</h4>
+          <div class="cat-filter-list">
+            <button data-stock="all" class="active">All items</button>
+            <button data-stock="in">In stock only</button>
+          </div>
+        </div>
+      </aside>
+
+      <div>
+        <div class="results-meta" id="resultsMeta"></div>
+        <div class="product-grid" id="productGrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-about">
+        <div class="brand" style="margin-bottom:16px;">
+          <div class="brand-mark">KS</div>
+          <div class="brand-text">
+            <span class="name">Khyber Spice Invader</span>
+            <span class="tag">Royal Oak · Est. 2005</span>
+          </div>
+        </div>
+        <p>One stop shop for Indian, Sri Lankan, Pakistani, Iranian and Arabic food and spices. Variety is the spice of life.</p>
+      </div>
+      <div>
+        <h5>Shop</h5>
+        <ul>
+          <li><a href="products.html">All products</a></li>
+          <li><a href="products.html#spices">Spices</a></li>
+          <li><a href="products.html#daals-lentils">Daals &amp; Lentils</a></li>
+          <li><a href="products.html#rice-flour">Rice &amp; Flour</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Info</h5>
+        <ul>
+          <li><a href="about.html">About us</a></li>
+          <li><a href="shipping.html">Shipping &amp; delivery</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Get in touch</h5>
+        <ul>
+          <li><a href="tel:+6496251766">09 625 1766</a></li>
+          <li><a href="tel:+6496241365">09 624 1365</a></li>
+          <li><a href="mailto:sales@khyberspice.co.nz">sales@khyberspice.co.nz</a></li>
+          <li><a href="https://www.facebook.com/people/Khyber-Spice-Invader-Royal-Oak/100056588722990/" target="_blank" rel="noopener">Facebook</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>&copy; 2026 Khyber Spice Invader Royal Oak</span>
+      <span>822 Manukau Road, Royal Oak, Auckland 1061</span>
+    </div>
+  </div>
+</footer>
+
+<div class="cart-overlay" id="cartOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Shopping basket">
+  <div class="cart-drawer-head">
+    <h3>Your Basket</h3>
+    <button class="cart-drawer-close" id="cartClose" type="button" aria-label="Close basket">&times;</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-drawer-foot">
+    <div class="cart-total" id="cartTotal"><span>Subtotal</span><strong>$0.00</strong></div>
+    <button class="btn btn-primary" style="width:100%; justify-content:center;" disabled title="Online checkout is launching soon">
+      Checkout — coming soon
+    </button>
+    <p class="cart-note">Online payment via Stripe is being set up. For now, call the store to place a phone order for anything in your basket.</p>
+  </div>
+</aside>
+
+<script src="js/main.js"></script>
+
+<script>
+let ALL = { categories: [], products: [] };
+let state = { cat: 'all', stock: 'all', q: '' };
+
+const swatchColor = { turmeric: '#E7A31C', paprika: '#C1440E', cardamom: '#5B7553' };
+
+function accentFor(slug){
+  const c = ALL.categories.find(c=>c.slug===slug);
+  return c ? swatchColor[c.accent] : '#E7A31C';
+}
+function labelFor(slug){
+  const c = ALL.categories.find(c=>c.slug===slug);
+  return c ? c.label : slug;
+}
+
+function renderFilters(){
+  const list = document.getElementById('catFilterList');
+  const counts = {};
+  ALL.products.forEach(p => counts[p.category] = (counts[p.category]||0)+1);
+  let html = `<button data-cat="all" class="${state.cat==='all'?'active':''}">All aisles <span class="n">${ALL.products.length}</span></button>`;
+  html += ALL.categories.map(c => `<button data-cat="${c.slug}" class="${state.cat===c.slug?'active':''}">${c.label} <span class="n">${counts[c.slug]||0}</span></button>`).join('');
+  list.innerHTML = html;
+  list.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+    state.cat = b.dataset.cat; renderFilters(); renderGrid();
+  }));
+
+  document.querySelectorAll('[data-stock]').forEach(b => b.addEventListener('click', () => {
+    document.querySelectorAll('[data-stock]').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    state.stock = b.dataset.stock; renderGrid();
+  }));
+}
+
+function renderGrid(){
+  const grid = document.getElementById('productGrid');
+  const meta = document.getElementById('resultsMeta');
+  let items = ALL.products.filter(p => {
+    if (state.cat !== 'all' && p.category !== state.cat) return false;
+    if (state.stock === 'in' && p.stock !== 'in') return false;
+    if (state.q && !p.name.toLowerCase().includes(state.q.toLowerCase())) return false;
+    return true;
+  });
+
+  meta.textContent = `${items.length} product${items.length===1?'':'s'}${state.cat!=='all' ? ' in ' + labelFor(state.cat) : ''}`;
+
+  if (items.length === 0){
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;">No products match yet — try another aisle, or call the store: this line may be in-store only for now.</div>';
+    return;
+  }
+
+  grid.innerHTML = items.map(p => `
+    <div class="product-card">
+      ${p.stock === 'out' ? '<span class="badge badge-out">Sold out</span>' : (p.note ? '<span class="badge badge-sale">' + p.note + '</span>' : '')}
+      <div class="swatch" style="background:${accentFor(p.category)}22;"></div>
+      <h4>${p.name}</h4>
+      <div class="unit">${p.unit} &middot; ${labelFor(p.category)}</div>
+      <div class="price-row">
+        <span class="price">$${p.price.toFixed(2)}</span>
+        <button class="add-btn" ${p.stock==='out'?'disabled':''} onclick='addToCart(${JSON.stringify(p)})'>+</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+fetch('data/products.json').then(r=>r.json()).then(data=>{
+  ALL = data;
+  const hash = decodeURIComponent(location.hash.replace('#',''));
+  if (hash && ALL.categories.some(c=>c.slug===hash)) state.cat = hash;
+  renderFilters();
+  renderGrid();
+});
+
+document.getElementById('searchInput').addEventListener('input', (e) => {
+  state.q = e.target.value; renderGrid();
+});
+</script>
+</body>
+</html>
