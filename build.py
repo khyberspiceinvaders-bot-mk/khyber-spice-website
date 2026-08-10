@@ -170,6 +170,10 @@ FOOT = """
   </div>
 </aside>
 
+<div class="ff-overlay" id="ffOverlay">
+  <div class="ff-modal" id="ffModal"></div>
+</div>
+
 <div class="product-modal-overlay" id="productModalOverlay">
   <div class="product-modal" id="productModal"></div>
 </div>
@@ -208,6 +212,8 @@ FOOT = """
 <script src="js/bot.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/spice-canvas.js"></script>
+<script src="js/flavor-finder.js"></script>
+<script src="js/transitions.js"></script>
 </body>
 </html>
 """
@@ -235,6 +241,7 @@ home_body = """
     <div class="hero-actions">
       <a href="products.html" class="btn btn-primary">Shop the range</a>
       <a href="about.html" class="btn btn-outline">Our story</a>
+      <button class="btn btn-header-fill ff-trigger" id="ffTrigger" type="button">&#127798; Find Your Flavor</button>
     </div>
     <div class="hero-strip">
       <div><span class="k">Store hours</span><span class="v">Mon&ndash;Sun, 9:00am&ndash;8:30pm</span></div>
@@ -280,10 +287,10 @@ home_body = """
 
 home_script = """
 <script>
-fetch('data/products.json').then(r=>r.json()).then(data=>{
+document.addEventListener('khyber:data-ready', () => {
   const grid = document.getElementById('homeCatGrid');
-  grid.innerHTML = data.categories.map(c => {
-    const count = data.products.filter(p=>p.category===c.slug).length;
+  grid.innerHTML = ALL.categories.map(c => {
+    const count = ALL.products.filter(p=>p.category===c.slug).length;
     return `<a class="cat-tile accent-${c.accent}" href="products.html#${c.slug}">
       <span class="lid"></span>
       <h3>${c.label}</h3>
@@ -336,7 +343,6 @@ shop_body = """
 
 shop_script = """
 <script>
-let ALL = { categories: [], products: [] };
 let state = { cat: 'all', stock: 'all', q: '' };
 
 const swatchColor = { turmeric: '#E7A31C', paprika: '#C1440E', cardamom: '#5B7553' };
@@ -434,88 +440,7 @@ function renderGrid(){
   });
 }
 
-const CATEGORY_GLYPH = {
-  spices: '&#127798;', 'daals-lentils': '&#129381;', 'rice-flour': '&#127806;',
-  'ghee-oil': '&#129347;', 'pickles-chutney': '&#127850;', 'personal-care': '&#10024;',
-  beverages: '&#127861;', snacks: '&#127871;', 'misc-grocery': '&#129371;',
-  'instant-food': '&#127858;', subcontinental: '&#127760;'
-};
-function iconFallback(category){
-  const div = document.createElement('div');
-  const accent = (ALL.categories.find(c=>c.slug===category) || {}).accent || 'turmeric';
-  div.className = 'icon-fallback photo-grad-' + accent;
-  div.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
-  return div;
-}
-
-function openProductModal({ name, price, unit, category, outOfStock }){
-  const overlay = document.getElementById('productModalOverlay');
-  const modal = document.getElementById('productModal');
-  const presets = [1,2,3,5,10];
-  let qty = 1;
-  const related = ALL.products.filter(p => p.category === category && p.name !== name).slice(0, 3);
-  function render(){
-    modal.innerHTML = `
-      <button class="pm-close" aria-label="Close">&times;</button>
-      <div class="pm-photo">
-        <img src="${guessImageUrls(name)[0]}" alt="${name}" data-candidates='${JSON.stringify(guessImageUrls(name)).replace(/'/g,"&#39;")}' data-attempt="1" onerror="tryNextImage(this,'${category}')">
-      </div>
-      <div class="pm-body">
-        <div class="pm-cat">${labelFor(category)}</div>
-        <h3>${name}</h3>
-        <div class="pm-baseprice">$${price.toFixed(2)} per ${unit}</div>
-        <div class="pm-multiple-note">This item is sold in multiples of ${unit}. Need more? Just bump the quantity below.</div>
-        <div class="pm-weight-label">Choose quantity</div>
-        <div class="pm-presets">
-          ${presets.map(n => `<button type="button" data-n="${n}" class="${n===qty?'active':''}">${n} &times; ${unit}</button>`).join('')}
-        </div>
-        <div class="pm-total-row">
-          <span>Total (${qty} &times; ${unit})</span>
-          <span class="amt">$${(price*qty).toFixed(2)}</span>
-        </div>
-        <button class="btn btn-primary" style="width:100%; justify-content:center;" ${outOfStock ? 'disabled' : ''}>
-          ${outOfStock ? 'Sold out' : 'Add to Basket'}
-        </button>
-        ${related.length ? `
-        <div class="pm-related">
-          <h5>You may also like</h5>
-          <div class="pm-related-grid">
-            ${related.map(r => `
-              <div class="pm-related-item" data-name="${r.name.replace(/"/g,'&quot;')}" data-price="${r.price}" data-unit="${r.unit}" data-category="${r.category}">
-                <div class="photo"><img src="${guessImageUrls(r.name)[0]}" alt="${r.name}" data-candidates='${JSON.stringify(guessImageUrls(r.name)).replace(/'/g,"&#39;")}' data-attempt="1" onerror="tryNextImage(this,'${r.category}')"></div>
-                <div class="rn">${r.name}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>` : ''}
-      </div>
-    `;
-    modal.querySelectorAll('.pm-presets button').forEach(b => b.addEventListener('click', () => { qty = parseInt(b.dataset.n); render(); }));
-    modal.querySelector('.pm-close').addEventListener('click', closeProductModal);
-    modal.querySelectorAll('.pm-related-item').forEach(el => {
-      el.addEventListener('click', () => openProductModal({
-        name: el.dataset.name, price: parseFloat(el.dataset.price), unit: el.dataset.unit, category: el.dataset.category, outOfStock: false
-      }));
-    });
-    if (!outOfStock){
-      modal.querySelector('.btn-primary').addEventListener('click', () => {
-        addToCart({ name, price: price * qty, unit: `${qty} \u00d7 ${unit}` });
-        closeProductModal();
-      });
-    }
-  }
-  render();
-  overlay.classList.add('open');
-}
-function closeProductModal(){
-  document.getElementById('productModalOverlay').classList.remove('open');
-}
-document.getElementById('productModalOverlay')?.addEventListener('click', (e) => {
-  if (e.target.id === 'productModalOverlay') closeProductModal();
-});
-
-fetch('data/products.json').then(r=>r.json()).then(data=>{
-  ALL = data;
+document.addEventListener('khyber:data-ready', () => {
   const hash = decodeURIComponent(location.hash.replace('#',''));
   if (hash && ALL.categories.some(c=>c.slug===hash)) state.cat = hash;
   const params = new URLSearchParams(location.search);

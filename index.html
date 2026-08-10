@@ -101,6 +101,7 @@
     <div class="hero-actions">
       <a href="products.html" class="btn btn-primary">Shop the range</a>
       <a href="about.html" class="btn btn-outline">Our story</a>
+      <button class="btn btn-header-fill ff-trigger" id="ffTrigger" type="button">&#127798; Find Your Flavor</button>
     </div>
     <div class="hero-strip">
       <div><span class="k">Store hours</span><span class="v">Mon&ndash;Sun, 9:00am&ndash;8:30pm</span></div>
@@ -206,6 +207,10 @@
   </div>
 </aside>
 
+<div class="ff-overlay" id="ffOverlay">
+  <div class="ff-modal" id="ffModal"></div>
+</div>
+
 <div class="product-modal-overlay" id="productModalOverlay">
   <div class="product-modal" id="productModal"></div>
 </div>
@@ -244,12 +249,14 @@
 <script src="js/bot.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/spice-canvas.js"></script>
+<script src="js/flavor-finder.js"></script>
+<script src="js/transitions.js"></script>
 
 <script>
-fetch('data/products.json').then(r=>r.json()).then(data=>{
+document.addEventListener('khyber:data-ready', () => {
   const grid = document.getElementById('homeCatGrid');
-  grid.innerHTML = data.categories.map(c => {
-    const count = data.products.filter(p=>p.category===c.slug).length;
+  grid.innerHTML = ALL.categories.map(c => {
+    const count = ALL.products.filter(p=>p.category===c.slug).length;
     return `<a class="cat-tile accent-${c.accent}" href="products.html#${c.slug}">
       <span class="lid"></span>
       <h3>${c.label}</h3>

@@ -634,6 +634,58 @@ button{ font-family:inherit; cursor:pointer; }
 .text-center{ text-align:center; }
 .mt-0{ margin-top:0; }
 
+/* ---------- Flavor Finder ---------- */
+.ff-trigger{ margin-top:4px; }
+.ff-overlay{
+  position:fixed; inset:0; background:rgba(10,10,14,0.72); backdrop-filter:blur(4px); z-index:170;
+  display:none; align-items:center; justify-content:center; padding:20px;
+}
+.ff-overlay.open{ display:flex; }
+.ff-modal{
+  background:var(--ink-soft); border:1px solid var(--line); border-radius:var(--radius);
+  width:min(480px,100%); max-height:88vh; overflow-y:auto; padding:32px; position:relative;
+}
+.ff-close{ position:absolute; top:16px; right:16px; background:none; border:none; color:var(--paper-faint); font-size:20px; }
+.ff-progress{ display:flex; gap:6px; margin-bottom:24px; }
+.ff-progress span{ height:4px; flex:1; border-radius:2px; background:var(--surface-2); }
+.ff-progress span.done{ background:var(--grad-warm); }
+.ff-q{ font-family:var(--font-display); font-size:22px; margin:0 0 20px; }
+.ff-options{ display:flex; flex-direction:column; gap:10px; }
+.ff-options button{
+  text-align:left; padding:14px 16px; border-radius:var(--radius-sm); border:1px solid var(--line);
+  background:var(--surface); color:var(--paper); font-size:14.5px;
+}
+.ff-options button:hover{ border-color:var(--turmeric); box-shadow:var(--glow-turmeric); }
+.ff-result-head{ text-align:center; margin-bottom:22px; }
+.ff-result-head .emoji{ font-size:44px; display:block; margin-bottom:10px; }
+.ff-result-head h3{ font-family:var(--font-display); font-size:24px; margin:0 0 6px; }
+.ff-result-head p{ color:var(--paper-dim); font-size:14px; margin:0; }
+.ff-result-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:22px; }
+.ff-result-item{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-sm); padding:10px; text-align:center; cursor:pointer; }
+.ff-result-item:hover{ border-color:var(--turmeric); }
+.ff-result-item .photo{ height:56px; margin-bottom:8px; border-radius:4px; }
+.ff-result-item .rn{ font-size:11px; line-height:1.3; }
+.ff-result-item .rp{ font-family:var(--font-mono); color:var(--turmeric); font-size:12px; margin-top:4px; }
+
+/* ---------- Page transition (text-zoom) ---------- */
+.page-transition{
+  position:fixed; inset:0; z-index:300; display:flex; align-items:center; justify-content:center;
+  background:var(--grad-warm); opacity:0; pointer-events:none;
+  transition:opacity .5s cubic-bezier(.6,0,.4,1);
+}
+.page-transition.leaving{ opacity:1; pointer-events:auto; }
+.page-transition.entering{ opacity:1; transition:opacity .6s ease .1s; }
+.page-transition .pt-text{
+  font-family:var(--font-display); font-weight:700; font-style:italic; color:var(--ink);
+  font-size:12vw; white-space:nowrap; transform:scale(0.4); opacity:0.9;
+  transition:transform .6s cubic-bezier(.6,0,.2,1);
+}
+.page-transition.leaving .pt-text{ transform:scale(2.6); }
+.page-transition.entering .pt-text{ transform:scale(0.4); opacity:0; transition:transform .6s cubic-bezier(.2,0,.2,1), opacity .5s ease; }
+@media (prefers-reduced-motion: reduce){
+  .page-transition{ display:none !important; }
+}
+
 /* ---------- Theme switcher ---------- */
 .theme-toggle{
   position:relative; width:38px; height:38px; border-radius:50%;

@@ -6,7 +6,22 @@
 // ============================================================
 
 const CART_KEY = 'khyber_cart_v1';
+let ALL = { categories: [], products: [] };
 
+// Guess the live product photo URL from the original store's predictable
+// CDN naming pattern. Several filename variants are tried in sequence
+// before falling back to a designed icon card — so a wrong guess never
+// shows broken art, and coverage is maximised without per-product work.
+function guessImageUrls(name){
+  const slug = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const base = 'https://www.khyberspice.co.nz/cdn/shop/products/';
+  return [
+    base + slug + '_medium.jpg',
+    base + slug + '.jpg',
+    base + slug + '_grande.jpg',
+    base + slug + '_large.jpg',
+  ];
+}
 function tryNextImage(img, category){
   const urls = JSON.parse(img.dataset.candidates || '[]');
   const attempt = parseInt(img.dataset.attempt || '0');
@@ -22,22 +37,88 @@ function smartImg(name, category, extraAttrs){
   return `<img src="${urls[0]}" alt="${name}" loading="lazy" data-candidates='${JSON.stringify(urls).replace(/'/g,"&#39;")}' data-attempt="1" onerror="tryNextImage(this,'${category}')" ${extraAttrs||''}>`;
 }
 
-// Guess the live product photo URL from the original store's predictable
-// CDN naming pattern. Several filename variants are tried in sequence
-// (see data-attempt wiring in shop.js) before falling back to a
-// designed icon card — so a wrong guess never shows broken art, and
-// coverage is maximised without needing per-product manual images.
-function guessImageUrls(name){
-  const slug = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  const base = 'https://www.khyberspice.co.nz/cdn/shop/products/';
-  return [
-    base + slug + '_medium.jpg',
-    base + slug + '.jpg',
-    base + slug + '_grande.jpg',
-    base + slug + '_large.jpg',
-  ];
+function labelFor(slug){
+  const c = ALL.categories.find(c=>c.slug===slug);
+  return c ? c.label : slug;
+}
+const CATEGORY_GLYPH = {
+  spices: '&#127798;', 'daals-lentils': '&#129381;', 'rice-flour': '&#127806;',
+  'ghee-oil': '&#129347;', 'pickles-chutney': '&#127850;', 'personal-care': '&#10024;',
+  beverages: '&#127861;', snacks: '&#127871;', 'misc-grocery': '&#129371;',
+  'instant-food': '&#127858;', subcontinental: '&#127760;'
+};
+function iconFallback(category){
+  const div = document.createElement('div');
+  const accent = (ALL.categories.find(c=>c.slug===category) || {}).accent || 'turmeric';
+  div.className = 'icon-fallback photo-grad-' + accent;
+  div.innerHTML = CATEGORY_GLYPH[category] || '&#127805;';
+  return div;
 }
 
+// ---- Product quick-view modal (shared across every page) ----
+function openProductModal({ name, price, unit, category, outOfStock }){
+  const overlay = document.getElementById('productModalOverlay');
+  const modal = document.getElementById('productModal');
+  if (!overlay || !modal) return;
+  const presets = [1,2,3,5,10];
+  let qty = 1;
+  const related = ALL.products.filter(p => p.category === category && p.name !== name).slice(0, 3);
+  function render(){
+    modal.innerHTML = `
+      <button class="pm-close" aria-label="Close">&times;</button>
+      <div class="pm-photo">${smartImg(name, category)}</div>
+      <div class="pm-body">
+        <div class="pm-cat">${labelFor(category)}</div>
+        <h3>${name}</h3>
+        <div class="pm-baseprice">$${price.toFixed(2)} per ${unit}</div>
+        <div class="pm-multiple-note">This item is sold in multiples of ${unit}. Need more? Just bump the quantity below.</div>
+        <div class="pm-weight-label">Choose quantity</div>
+        <div class="pm-presets">
+          ${presets.map(n => `<button type="button" data-n="${n}" class="${n===qty?'active':''}">${n} &times; ${unit}</button>`).join('')}
+        </div>
+        <div class="pm-total-row">
+          <span>Total (${qty} &times; ${unit})</span>
+          <span class="amt">$${(price*qty).toFixed(2)}</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%; justify-content:center;" ${outOfStock ? 'disabled' : ''}>
+          ${outOfStock ? 'Sold out' : 'Add to Basket'}
+        </button>
+        ${related.length ? `
+        <div class="pm-related">
+          <h5>You may also like</h5>
+          <div class="pm-related-grid">
+            ${related.map(r => `
+              <div class="pm-related-item" data-name="${r.name.replace(/"/g,'&quot;')}" data-price="${r.price}" data-unit="${r.unit}" data-category="${r.category}">
+                <div class="photo">${smartImg(r.name, r.category)}</div>
+                <div class="rn">${r.name}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>` : ''}
+      </div>
+    `;
+    modal.querySelectorAll('.pm-presets button').forEach(b => b.addEventListener('click', () => { qty = parseInt(b.dataset.n); render(); }));
+    modal.querySelector('.pm-close').addEventListener('click', closeProductModal);
+    modal.querySelectorAll('.pm-related-item').forEach(el => {
+      el.addEventListener('click', () => openProductModal({
+        name: el.dataset.name, price: parseFloat(el.dataset.price), unit: el.dataset.unit, category: el.dataset.category, outOfStock: false
+      }));
+    });
+    if (!outOfStock){
+      modal.querySelector('.btn-primary').addEventListener('click', () => {
+        addToCart({ name, price: price * qty, unit: `${qty} \u00d7 ${unit}` });
+        closeProductModal();
+      });
+    }
+  }
+  render();
+  overlay.classList.add('open');
+}
+function closeProductModal(){
+  document.getElementById('productModalOverlay')?.classList.remove('open');
+}
+
+// ---- Cart ----
 function getCart(){
   try{ return JSON.parse(localStorage.getItem(CART_KEY)) || []; }
   catch(e){ return []; }
@@ -111,6 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('cartToggle')?.addEventListener('click', openCart);
   document.getElementById('cartClose')?.addEventListener('click', closeCart);
   document.getElementById('cartOverlay')?.addEventListener('click', closeCart);
+  document.getElementById('productModalOverlay')?.addEventListener('click', (e) => {
+    if (e.target.id === 'productModalOverlay') closeProductModal();
+  });
 
   const headerSearch = document.getElementById('headerSearchInput');
   headerSearch?.addEventListener('keydown', (e) => {
@@ -157,5 +241,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (themePopover?.classList.contains('open') && !themePopover.contains(e.target) && e.target !== themeToggle){
       themePopover.classList.remove('open');
     }
+  });
+
+  // ---- Shared catalog load — every page gets ALL populated, then
+  // notifies page-specific scripts (shop grid, homepage tiles, Flavor Finder).
+  fetch('data/products.json').then(r => r.json()).then(data => {
+    ALL = data;
+    document.dispatchEvent(new CustomEvent('khyber:data-ready'));
   });
 });
