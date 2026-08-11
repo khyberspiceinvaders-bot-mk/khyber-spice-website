@@ -2,41 +2,27 @@
 // Auth — wired to Netlify Identity, a real free auth service
 // built into Netlify. No custom backend needed. To activate:
 // Netlify dashboard → Site configuration → Identity → Enable Identity.
-// Until enabled, the sign-in button still opens but auth calls
-// will no-op gracefully.
+// The "Account" nav link always works as a normal link to
+// account.html, which shows a sign-in card when logged out —
+// no separate header button needed.
 // ============================================================
 
 function initAuthUI(){
   const widget = window.netlifyIdentity;
-  const signInBtn = document.getElementById('signInBtn');
-  const accountName = document.getElementById('accountName');
+  const navLink = document.getElementById('accountNavLink');
 
   function reflectUser(user){
-    if (accountName) accountName.textContent = user ? (user.user_metadata?.full_name || user.email) : '';
-    if (signInBtn) signInBtn.textContent = user ? 'Account' : 'Sign in';
+    if (navLink) navLink.textContent = user ? (user.user_metadata?.full_name || 'Account').split(' ')[0] : 'Account';
     const accEl = document.getElementById('accountPanel');
     if (accEl) renderAccountPanel(user);
   }
 
-  if (!widget){
-    // Identity script didn't load (e.g. offline preview) — degrade gracefully.
-    signInBtn?.addEventListener('click', () => alert('Sign-in requires Netlify Identity to be enabled on the deployed site.'));
-    return;
-  }
+  if (!widget) return; // Identity script didn't load — account.html's own card still explains what to do.
 
   widget.on('init', reflectUser);
   widget.on('login', user => { reflectUser(user); widget.close(); });
   widget.on('logout', () => reflectUser(null));
   widget.init();
-
-  signInBtn?.addEventListener('click', () => {
-    const user = widget.currentUser();
-    if (user && location.pathname.indexOf('account.html') === -1){
-      location.href = 'account.html';
-    } else {
-      widget.open(user ? undefined : 'login');
-    }
-  });
 }
 
 function renderAccountPanel(user){

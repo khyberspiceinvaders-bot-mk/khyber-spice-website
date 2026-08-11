@@ -197,10 +197,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   const headerSearch = document.getElementById('headerSearchInput');
-  headerSearch?.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && headerSearch.value.trim()){
-      location.href = 'products.html?q=' + encodeURIComponent(headerSearch.value.trim());
-    }
+  const mobileSearch = document.getElementById('mobileSearchInput');
+  [headerSearch, mobileSearch].forEach(input => {
+    input?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && input.value.trim()){
+        location.href = 'products.html?q=' + encodeURIComponent(input.value.trim());
+      }
+    });
   });
 
   // ---- Theme switcher ----
@@ -228,6 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
       themeDot?.remove();
       document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      document.getElementById('mainNav')?.classList.remove('open');
     });
   });
   themeToggle?.addEventListener('click', (e) => {

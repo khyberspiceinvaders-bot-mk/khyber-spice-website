@@ -18,7 +18,7 @@ def head(title, desc, active):
         ("account.html", "Account"),
     ]
     nav_html = "\n".join(
-        f'<a href="{href}" class="{"active" if href==active else ""}">{label}</a>'
+        f'<a href="{href}" class="{"active" if href==active else ""}"{" id=\"accountNavLink\"" if href=="account.html" else ""}>{label}</a>'
         for href, label in nav_items
     )
     return f"""<!doctype html>
@@ -77,9 +77,22 @@ def head(title, desc, active):
     </div>
     <nav class="main-nav" id="mainNav">
       {nav_html}
+      <div class="mobile-nav-extra">
+        <div class="header-search mobile-search">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="mobileSearchInput" placeholder="Search the shop...">
+        </div>
+        <p class="mobile-nav-label">Colour theme</p>
+        <div class="theme-options">
+          <button class="theme-option" data-theme="khyber"><span class="swatch-dot" style="background:#F0981F;"></span>Classic</button>
+          <button class="theme-option" data-theme="light"><span class="swatch-dot" style="background:#D97F0A;"></span>Light</button>
+          <button class="theme-option" data-theme="sunset"><span class="swatch-dot" style="background:#FF4D8D;"></span>Sunset</button>
+          <button class="theme-option" data-theme="midnight"><span class="swatch-dot" style="background:#4DD4FF;"></span>Midnight</button>
+        </div>
+      </div>
     </nav>
-    <div style="display:flex; align-items:center; gap:10px;">
-      <div style="position:relative;">
+    <div class="header-actions">
+      <div class="theme-toggle-wrap">
         <button class="theme-toggle" id="themeToggle" type="button" aria-label="Change colour theme">
           &#127912;
           <span class="theme-toggle-dot" id="themeDot"></span>
@@ -87,7 +100,7 @@ def head(title, desc, active):
         <div class="theme-teaser" id="themeTeaser">Tap to try a different look &mdash; 4 colour themes!</div>
         <div class="theme-popover" id="themePopover">
           <p>Colour theme</p>
-          <div class="theme-options" id="themeOptions">
+          <div class="theme-options">
             <button class="theme-option" data-theme="khyber"><span class="swatch-dot" style="background:#F0981F;"></span>Classic</button>
             <button class="theme-option" data-theme="light"><span class="swatch-dot" style="background:#D97F0A;"></span>Light</button>
             <button class="theme-option" data-theme="sunset"><span class="swatch-dot" style="background:#FF4D8D;"></span>Sunset</button>
@@ -95,10 +108,9 @@ def head(title, desc, active):
           </div>
         </div>
       </div>
-      <button class="btn btn-header-fill btn-small" id="signInBtn" type="button">Sign in</button>
       <button class="btn btn-header btn-small cart-toggle" id="cartToggle" type="button">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
-        Basket <span class="cart-count" id="cartCount" style="display:none;">0</span>
+        <span class="cart-label">Basket</span> <span class="cart-count" id="cartCount" style="display:none;">0</span>
       </button>
       <button class="nav-toggle" id="navToggle" type="button" aria-label="Toggle menu">&#9776;</button>
     </div>
@@ -240,7 +252,7 @@ home_body = """
     <p class="lede">Khyber Spice Invader has stocked Royal Oak's kitchens since 2005 &mdash; whole and ground spices, daals, rice, ghee, snacks and Ayurvedic personal care, at prices that make the trip worth it.</p>
     <div class="hero-actions">
       <a href="products.html" class="btn btn-primary">Shop the range</a>
-      <a href="about.html" class="btn btn-outline">Our story</a>
+      <a href="about.html" class="btn btn-outline hide-mobile">Our story</a>
       <button class="btn btn-header-fill ff-trigger" id="ffTrigger" type="button">&#127798; Find Your Flavor</button>
     </div>
     <div class="hero-strip">
