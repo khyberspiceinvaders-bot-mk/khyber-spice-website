@@ -1,0 +1,93 @@
+# Product photo filenames
+
+Every product below first checks assets/products/<filename> before
+anything else. Save a real photo with the EXACT filename shown (jpg
+or png both work) and it will appear on the site immediately — no
+code changes, no rebuild, just refresh the page.
+
+Ajinomoto                                     -> assets/products/ajinomoto.jpg
+Ajwain                                        -> assets/products/ajwain.jpg
+All Spice Whole                               -> assets/products/all-spice-whole.jpg
+Alsi / Lin / Flax Seed                        -> assets/products/alsi-lin-flax-seed.jpg
+Alsi Powder                                   -> assets/products/alsi-powder.jpg
+Amchur Powder 100g                            -> assets/products/amchur-powder-100g.jpg
+Amla Whole                                    -> assets/products/amla-whole.jpg
+Besan Gram Flour 1kg                          -> assets/products/besan-gram-flour-1kg.jpg
+Black Cardamom 100gm                          -> assets/products/black-cardamom-100gm.jpg
+Black Cardamom Whole                          -> assets/products/black-cardamom-whole.jpg
+Black Pepper Cracked                          -> assets/products/black-pepper-cracked.jpg
+Black Pepper Cracked 100gm                    -> assets/products/black-pepper-cracked-100gm.jpg
+Black Pepper Powder                           -> assets/products/black-pepper-powder.jpg
+Black Pepper Powder 100gm                     -> assets/products/black-pepper-powder-100gm.jpg
+Black Pepper Seeds 100g                       -> assets/products/black-pepper-seeds-100g.jpg
+Black Pepper Whole                            -> assets/products/black-pepper-whole.jpg
+Black Pepper Whole 100gm                      -> assets/products/black-pepper-whole-100gm.jpg
+Char Gundhar                                  -> assets/products/char-gundhar.jpg
+Chat Masala                                   -> assets/products/chat-masala.jpg
+Chia Seed Black 100gm                         -> assets/products/chia-seed-black-100gm.jpg
+Black Eye Beans                               -> assets/products/black-eye-beans.jpg
+Black Turtle Beans                            -> assets/products/black-turtle-beans.jpg
+Blue Peas                                     -> assets/products/blue-peas.jpg
+Brown / Black Chana                           -> assets/products/brown-black-chana.jpg
+Chana Dhal                                    -> assets/products/chana-dhal.jpg
+Chick Peas Kabuli                             -> assets/products/chick-peas-kabuli.jpg
+Green Moong Whole                             -> assets/products/green-moong-whole.jpg
+Indian Lentils Whole                          -> assets/products/indian-lentils-whole.jpg
+Kashish Chana Dal 1kg                         -> assets/products/kashish-chana-dal-1kg.jpg
+Kashish Moong Dal 1kg                         -> assets/products/kashish-moong-dal-1kg.jpg
+Kashish Urad Whole 1kg                        -> assets/products/kashish-urad-whole-1kg.jpg
+Masoor Dhal - Red Lentils                     -> assets/products/masoor-dhal-red-lentils.jpg
+Mung Dhal                                     -> assets/products/mung-dhal.jpg
+Mung Dhal Split                               -> assets/products/mung-dhal-split.jpg
+Pink Beans                                    -> assets/products/pink-beans.jpg
+Red Chowli - Cow Beans                        -> assets/products/red-chowli-cow-beans.jpg
+Red Kidney Beans                              -> assets/products/red-kidney-beans.jpg
+Red Kidney Beans (Medium)                     -> assets/products/red-kidney-beans-medium.jpg
+Red Kidney Beans (Small)                      -> assets/products/red-kidney-beans-small.jpg
+Red Whole Lentils USA                         -> assets/products/red-whole-lentils-usa.jpg
+Gaay Rice Flour 1kg                           -> assets/products/gaay-rice-flour-1kg.jpg
+Dawat Rozana Basmati Rice 5kg                 -> assets/products/dawat-rozana-basmati-rice-5kg.jpg
+Daawat Quick Cooking Brown Basmati Rice 1kg   -> assets/products/daawat-quick-cooking-brown-basmati-rice-1kg.jpg
+Gaay Ragi Flour 1kg                           -> assets/products/gaay-ragi-flour-1kg.jpg
+Rice Flour                                    -> assets/products/rice-flour.jpg
+Sahara Super Kernal Basmati 20kg              -> assets/products/sahara-super-kernal-basmati-20kg.jpg
+Qataghan Sela Basmati Rice 10kg               -> assets/products/qataghan-sela-basmati-rice-10kg.jpg
+Gaay Besan 1kg                                -> assets/products/gaay-besan-1kg.jpg
+Chana Flour - Besan Fine                      -> assets/products/chana-flour-besan-fine.jpg
+India Gate Classic Basmati 5kg                -> assets/products/india-gate-classic-basmati-5kg.jpg
+Gaay Bajra Flour 1kg                          -> assets/products/gaay-bajra-flour-1kg.jpg
+Tapioca Flour Loose                           -> assets/products/tapioca-flour-loose.jpg
+Standard Flour - Maida                        -> assets/products/standard-flour-maida.jpg
+Corn Flour - Yellow (Coarse)                  -> assets/products/corn-flour-yellow-coarse.jpg
+Buck Wheat Hulled                             -> assets/products/buck-wheat-hulled.jpg
+Urid Flour                                    -> assets/products/urid-flour.jpg
+Nirapara Iddli Podi 1kg                       -> assets/products/nirapara-iddli-podi-1kg.jpg
+Ace Mustard Oil 1L                            -> assets/products/ace-mustard-oil-1l.jpg
+Ace Mustard Oil 2L                            -> assets/products/ace-mustard-oil-2l.jpg
+Ace Mustard Oil 5L                            -> assets/products/ace-mustard-oil-5l.jpg
+Achar Pachranga Mixed 800g                    -> assets/products/achar-pachranga-mixed-800g.jpg
+Afghan Snow 50g                               -> assets/products/afghan-snow-50g.jpg
+Aloe Vera Juice 500ml                         -> assets/products/aloe-vera-juice-500ml.jpg
+Ashwin Virgin Kalonji Oil 100ml               -> assets/products/ashwin-virgin-kalonji-oil-100ml.jpg
+Ashwin's Castor Oil                           -> assets/products/ashwin-s-castor-oil.jpg
+Avon Agro Tamrind Mukasar 1kg                 -> assets/products/avon-agro-tamrind-mukasar-1kg.jpg
+Ayur All Purpose Cream                        -> assets/products/ayur-all-purpose-cream.jpg
+Ayur Amla Shikai Shampoo 500ml                -> assets/products/ayur-amla-shikai-shampoo-500ml.jpg
+Ayur Anti Sun Tan Face Pack 100g              -> assets/products/ayur-anti-sun-tan-face-pack-100g.jpg
+Ayur Cold Wax 200g                            -> assets/products/ayur-cold-wax-200g.jpg
+Ayur Cold Wax 600gm                           -> assets/products/ayur-cold-wax-600gm.jpg
+Ayur Cucumber Face Pack 100g                  -> assets/products/ayur-cucumber-face-pack-100g.jpg
+Ayur Hot Wax 150g                             -> assets/products/ayur-hot-wax-150g.jpg
+Ayur Hot Wax 700gm                            -> assets/products/ayur-hot-wax-700gm.jpg
+Ayur Massage Cream 80ml                       -> assets/products/ayur-massage-cream-80ml.jpg
+Ayur Neem/Cucumber Face Pack 100g             -> assets/products/ayur-neem-cucumber-face-pack-100g.jpg
+Ayur Sandal Face Pack 100g                    -> assets/products/ayur-sandal-face-pack-100g.jpg
+Baidynth Mahabhringraj Oil 100ml              -> assets/products/baidynth-mahabhringraj-oil-100ml.jpg
+Bajaj Almond Hair Oil 100ml                   -> assets/products/bajaj-almond-hair-oil-100ml.jpg
+Alokozay Green 100 Tea Bags                   -> assets/products/alokozay-green-100-tea-bags.jpg
+Alokozay Green Loose Tea 500gm                -> assets/products/alokozay-green-loose-tea-500gm.jpg
+Ambika Appalam Papad                          -> assets/products/ambika-appalam-papad.jpg
+Almonds Ground / Powder                       -> assets/products/almonds-ground-powder.jpg
+Almonds Sliced                                -> assets/products/almonds-sliced.jpg
+Almonds Slivered                              -> assets/products/almonds-slivered.jpg
+Almonds Whole                                 -> assets/products/almonds-whole.jpg

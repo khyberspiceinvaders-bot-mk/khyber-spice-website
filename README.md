@@ -149,9 +149,16 @@ CDN before giving up and showing a designed icon card instead of a
 broken image. I did not hotlink random unlicensed photos from the open
 internet for individual products — for a live business site, an image
 whose usage rights I can't verify is a real liability, not just a visual
-nitpick. The fastest way to get every single product a guaranteed real
-photo is still the Shopify CSV export (section 3) or free-licensed stock
-photos dropped into `assets/products/` (ask me and I'll wire it up).
+nitpick.
+
+**The fastest real fix:** open `assets/products/PHOTO_FILENAMES.txt` —
+it lists the exact filename the site is already looking for, for every
+single product. Save a real photo (from a free-license site, your own
+camera, wherever you're comfortable) with that exact filename into
+`assets/products/`, and it appears on the site immediately — no code
+changes, no rebuild. It's checked before everything else, so it always
+wins. The file regenerates automatically if you ever add products, so
+it never goes stale.
 
 ## Notes
 

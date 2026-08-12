@@ -223,7 +223,6 @@ FOOT = """
 <script src="js/main.js"></script>
 <script src="js/bot.js"></script>
 <script src="js/auth.js"></script>
-<script src="js/spice-canvas.js"></script>
 <script src="js/flavor-finder.js"></script>
 <script src="js/transitions.js"></script>
 </body>
@@ -240,26 +239,24 @@ def write(path, html):
 # ------------------------------------------------------------------
 home_body = """
 <section class="hero">
-  <canvas id="spiceCanvas" aria-hidden="true"></canvas>
   <video id="spiceVideo" autoplay muted loop playsinline aria-hidden="true">
     <source src="assets/spice-pour.webm" type="video/webm">
     <source src="assets/spice-pour.mp4" type="video/mp4">
   </video>
   <div class="wrap">
-    <div class="stamp">Est. 2005<br>Royal Oak<br>Auckland</div>
-    <div class="hero-eyebrow">Indian &middot; Sri Lankan &middot; Pakistani &middot; Iranian &middot; Arabic Grocery</div>
+    <div class="hero-eyebrow">Indian &middot; Sri Lankan &middot; Pakistani &middot; Iranian &middot; Arabic Grocery &middot; Est. 2005</div>
     <h1>Variety is the<br><em>spice of life.</em></h1>
     <p class="lede">Khyber Spice Invader has stocked Royal Oak's kitchens since 2005 &mdash; whole and ground spices, daals, rice, ghee, snacks and Ayurvedic personal care, at prices that make the trip worth it.</p>
     <div class="hero-actions">
       <a href="products.html" class="btn btn-primary">Shop the range</a>
-      <a href="about.html" class="btn btn-outline hide-mobile">Our story</a>
       <button class="btn btn-header-fill ff-trigger" id="ffTrigger" type="button">&#127798; Find Your Flavor</button>
     </div>
     <div class="hero-strip">
-      <div><span class="k">Store hours</span><span class="v">Mon&ndash;Sun, 9:00am&ndash;8:30pm</span></div>
-      <div><span class="k">Address</span><span class="v">822 Manukau Road, Royal Oak</span></div>
-      <div><span class="k">Delivery</span><span class="v">Anywhere in New Zealand</span></div>
-      <div><span class="k">Hygiene rating</span><span class="v">"A" certified, Auckland Council</span></div>
+      <span>Mon&ndash;Sun, 9am&ndash;8:30pm</span>
+      <span class="sep">&middot;</span>
+      <span>822 Manukau Road, Royal Oak</span>
+      <span class="sep">&middot;</span>
+      <span>Delivery anywhere in NZ</span>
     </div>
   </div>
 </section>
@@ -591,5 +588,28 @@ account_body = """
 </section>
 """
 write("account.html", head("Account — Khyber Spice Invader", "Sign in to your Khyber Spice Invader account.", "account.html") + account_body + FOOT)
+
+# ------------------------------------------------------------------
+# PHOTO MANIFEST — exact filenames the local-override system checks,
+# so adding real photos is just "save file with this exact name".
+# ------------------------------------------------------------------
+import json as _json, re as _re
+_catalog = _json.load(open(os.path.join(ROOT, "data", "products.json")))
+_lines = [
+    "# Product photo filenames",
+    "",
+    "Every product below first checks assets/products/<filename> before",
+    "anything else. Save a real photo with the EXACT filename shown (jpg",
+    "or png both work) and it will appear on the site immediately — no",
+    "code changes, no rebuild, just refresh the page.",
+    "",
+]
+for p in _catalog["products"]:
+    slug = _re.sub(r'^-+|-+$', '', _re.sub(r'[^a-z0-9]+', '-', p["name"].lower()))
+    _lines.append(f'{p["name"]:<45} -> assets/products/{slug}.jpg')
+os.makedirs(os.path.join(ROOT, "assets", "products"), exist_ok=True)
+with open(os.path.join(ROOT, "assets", "products", "PHOTO_FILENAMES.txt"), "w") as f:
+    f.write("\n".join(_lines) + "\n")
+print("wrote assets/products/PHOTO_FILENAMES.txt")
 
 print("\\nBuild complete.")

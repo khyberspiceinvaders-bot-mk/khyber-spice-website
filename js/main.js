@@ -9,17 +9,22 @@ const CART_KEY = 'khyber_cart_v1';
 let ALL = { categories: [], products: [] };
 
 // Guess the live product photo URL from the original store's predictable
-// CDN naming pattern. Several filename variants are tried in sequence
-// before falling back to a designed icon card — so a wrong guess never
-// shows broken art, and coverage is maximised without per-product work.
+// CDN naming pattern. A local override in assets/products/ is tried
+// FIRST — drop a real photo there with the matching filename and it
+// takes priority automatically, no code changes needed. Several CDN
+// filename variants are tried after that before falling back to a
+// designed icon card — so a wrong guess never shows broken art.
 function guessImageUrls(name){
-  const slug = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  const base = 'https://www.khyberspice.co.nz/cdn/shop/products/';
+  const localSlug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  const cdnSlug = name.toUpperCase().replace(/[^A-Z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  const cdnBase = 'https://www.khyberspice.co.nz/cdn/shop/products/';
   return [
-    base + slug + '_medium.jpg',
-    base + slug + '.jpg',
-    base + slug + '_grande.jpg',
-    base + slug + '_large.jpg',
+    `assets/products/${localSlug}.jpg`,
+    `assets/products/${localSlug}.png`,
+    cdnBase + cdnSlug + '_medium.jpg',
+    cdnBase + cdnSlug + '.jpg',
+    cdnBase + cdnSlug + '_grande.jpg',
+    cdnBase + cdnSlug + '_large.jpg',
   ];
 }
 function tryNextImage(img, category){
