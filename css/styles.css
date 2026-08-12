@@ -294,8 +294,8 @@ button{ font-family:inherit; cursor:pointer; }
   border:1px solid transparent; transition:transform .15s ease, background .15s ease, box-shadow .15s ease;
 }
 .btn:hover{ transform:translateY(-1px); }
-.btn-primary{ background:var(--grad-warm); color:var(--ink); box-shadow:0 4px 18px rgba(255,90,54,0.28); }
-.btn-primary:hover{ box-shadow:0 6px 26px rgba(255,90,54,0.4); }
+.btn-primary{ background:var(--grad-warm); color:var(--ink); box-shadow:0 2px 8px rgba(0,0,0,0.18); }
+.btn-primary:hover{ box-shadow:0 6px 22px rgba(255,90,54,0.32); }
 .btn-outline{ border-color:var(--paper-dim); color:var(--paper); }
 .btn-outline:hover{ border-color:var(--turmeric); color:var(--turmeric); }
 .btn-small{ padding:9px 16px; font-size:11.5px; }
@@ -307,9 +307,9 @@ button{ font-family:inherit; cursor:pointer; }
 .btn-header:hover{ border-color:var(--turmeric); box-shadow:var(--glow-turmeric); }
 .btn-header-fill{
   background:var(--grad-cool); color:#141420; border:none;
-  box-shadow:0 4px 16px rgba(155,126,240,0.32);
+  box-shadow:0 2px 8px rgba(0,0,0,0.18);
 }
-.btn-header-fill:hover{ box-shadow:0 6px 22px rgba(155,126,240,0.45); }
+.btn-header-fill:hover{ box-shadow:0 6px 20px rgba(155,126,240,0.35); }
 
 /* ---------- Hero ---------- */
 .hero{
@@ -549,6 +549,7 @@ button{ font-family:inherit; cursor:pointer; }
 .footer-grid a:hover{ color:var(--turmeric); }
 .footer-about p{ color:var(--paper-dim); font-size:14px; max-width:34ch; }
 .footer-bottom{ border-top:1px solid var(--line); padding-top:24px; display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-family:var(--font-mono); font-size:11.5px; color:var(--paper-faint); }
+.footer-bottom a:hover{ color:var(--turmeric); }
 
 /* ---------- Khyber Bot ---------- */
 .bot-launcher{
@@ -648,6 +649,13 @@ button{ font-family:inherit; cursor:pointer; }
 /* ---------- Utility ---------- */
 .text-center{ text-align:center; }
 .mt-0{ margin-top:0; }
+
+/* ---------- Real brand chips (authenticity, not stock imagery) ---------- */
+.brand-chip-row{ display:flex; flex-wrap:wrap; gap:10px; }
+.brand-chip-row span{
+  font-family:var(--font-mono); font-size:12.5px; padding:8px 14px; border-radius:999px;
+  border:1px solid var(--line); background:var(--surface); color:var(--paper-dim);
+}
 
 /* ---------- Flavor Finder ---------- */
 .ff-trigger{ margin-top:4px; }

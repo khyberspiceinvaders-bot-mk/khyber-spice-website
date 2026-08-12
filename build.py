@@ -8,7 +8,7 @@ import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
-def head(title, desc, active):
+def head(title, desc, active, ambient=False):
     nav_items = [
         ("index.html", "Home"),
         ("products.html", "Shop"),
@@ -21,6 +21,17 @@ def head(title, desc, active):
         f'<a href="{href}" class="{"active" if href==active else ""}"{" id=\"accountNavLink\"" if href=="account.html" else ""}>{label}</a>'
         for href, label in nav_items
     )
+    ambient_html = """<div class="ambient">
+  <div class="blob b1"></div>
+  <div class="blob b2"></div>
+  <div class="blob b3"></div>
+  <span class="icon" style="top:12%; left:8%; font-size:46px; animation-delay:-2s;">&#127798;</span>
+  <span class="icon" style="top:22%; right:12%; font-size:38px; animation-delay:-8s;">&#127806;</span>
+  <span class="icon" style="top:55%; left:5%; font-size:34px; animation-delay:-4s;">&#129381;</span>
+  <span class="icon" style="top:68%; right:8%; font-size:44px; animation-delay:-11s;">&#127861;</span>
+  <span class="icon" style="top:85%; left:18%; font-size:30px; animation-delay:-6s;">&#127850;</span>
+  <span class="icon" style="top:38%; right:30%; font-size:28px; animation-delay:-14s;">&#129347;</span>
+</div>""" if ambient else ""
     return f"""<!doctype html>
 <html lang="en">
 <head>
@@ -36,17 +47,7 @@ def head(title, desc, active):
 </head>
 <body>
 <div class="grain"></div>
-<div class="ambient">
-  <div class="blob b1"></div>
-  <div class="blob b2"></div>
-  <div class="blob b3"></div>
-  <span class="icon" style="top:12%; left:8%; font-size:46px; animation-delay:-2s;">&#127798;</span>
-  <span class="icon" style="top:22%; right:12%; font-size:38px; animation-delay:-8s;">&#127806;</span>
-  <span class="icon" style="top:55%; left:5%; font-size:34px; animation-delay:-4s;">&#129381;</span>
-  <span class="icon" style="top:68%; right:8%; font-size:44px; animation-delay:-11s;">&#127861;</span>
-  <span class="icon" style="top:85%; left:18%; font-size:30px; animation-delay:-6s;">&#127850;</span>
-  <span class="icon" style="top:38%; right:30%; font-size:28px; animation-delay:-14s;">&#129347;</span>
-</div>
+{ambient_html}
 
 <div class="vip-strip">
   <div class="wrap">
@@ -161,6 +162,7 @@ FOOT = """
     </div>
     <div class="footer-bottom">
       <span>&copy; 2026 Khyber Spice Invader Royal Oak</span>
+      <span><a href="terms.html">Terms</a> &middot; <a href="privacy.html">Privacy</a></span>
       <span>822 Manukau Road, Royal Oak, Auckland 1061</span>
     </div>
   </div>
@@ -284,11 +286,23 @@ home_body = """
     </div>
     <div class="ticket">
       <div class="row"><span>Founded</span><span>2005</span></div>
-      <div class="row"><span>Locations</span><span>Royal Oak, Auckland</span></div>
+      <div class="row"><span>Location</span><span>822 Manukau Rd, Royal Oak</span></div>
       <div class="row"><span>Hygiene grade</span><span>&ldquo;A&rdquo; &mdash; Auckland Council</span></div>
       <div class="row"><span>Delivery area</span><span>Nationwide, NZ</span></div>
-      <div class="row"><span>Specialty</span><span>Indian &middot; Sri Lankan &middot; Pakistani &middot; Iranian &middot; Arabic</span></div>
+      <div class="row"><span>On Facebook</span><span>508 followers &middot; 16 check-ins</span></div>
       <div class="row"><span>Payment</span><span>Card in-store &middot; online soon</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="border-bottom:none; padding-top:0;">
+  <div class="wrap">
+    <div class="section-eyebrow">On our shelves right now</div>
+    <h2 style="font-family:var(--font-display); font-size:clamp(22px,2.6vw,30px); font-weight:600; margin:0 0 20px;">Real brands, not filler</h2>
+    <div class="brand-chip-row">
+      <span>Kashish</span><span>Ayur</span><span>Daawat</span><span>India Gate</span>
+      <span>Alokozay</span><span>Nirapara</span><span>Sahara</span><span>Qataghan</span>
+      <span>Ace</span><span>Bajaj</span><span>Baidynth</span><span>Avon Agro</span>
     </div>
   </div>
 </section>
@@ -311,7 +325,7 @@ document.addEventListener('khyber:data-ready', () => {
 </script>
 """
 
-write("index.html", head("Khyber Spice Invader — Indian &amp; Subcontinental Grocery, Royal Oak", "One stop shop for Indian, Sri Lankan, Pakistani, Iranian and Arabic food and spices in Royal Oak, Auckland since 2005.", "index.html") + home_body + FOOT.replace("</body>", home_script + "</body>"))
+write("index.html", head("Khyber Spice Invader — Indian &amp; Subcontinental Grocery, Royal Oak", "One stop shop for Indian, Sri Lankan, Pakistani, Iranian and Arabic food and spices in Royal Oak, Auckland since 2005.", "index.html", ambient=True) + home_body + FOOT.replace("</body>", home_script + "</body>"))
 
 # ------------------------------------------------------------------
 # PRODUCTS / SHOP
@@ -588,6 +602,75 @@ account_body = """
 </section>
 """
 write("account.html", head("Account — Khyber Spice Invader", "Sign in to your Khyber Spice Invader account.", "account.html") + account_body + FOOT)
+
+# ------------------------------------------------------------------
+# PRIVACY POLICY
+# ------------------------------------------------------------------
+privacy_body = """
+<section class="info-page">
+  <div class="wrap">
+    <h1>Privacy Policy</h1>
+    <p class="lede">Last updated August 2026. This explains what information this website collects and what happens to it.</p>
+    <div class="callout">This is a starting draft, not legal advice — see the note at the end before relying on it for a live business.</div>
+    <div class="prose" style="max-width:70ch;">
+      <h2>What we collect</h2>
+      <p>If you create an account (via the Sign in / Account page), we collect the name and email address you provide. If you use the contact form, we collect whatever you type into it. If you browse the shop, your basket and colour theme preference are stored only in your own browser (localStorage) — not sent to us or anyone else.</p>
+
+      <h2>How it's used</h2>
+      <p>Account details are used to let you sign in and, once online ordering launches, to process and track orders. Contact form submissions are used only to respond to your enquiry. We do not sell or rent personal information to third parties.</p>
+
+      <h2>Who else sees it</h2>
+      <p>Account sign-in is handled by Netlify Identity (part of Netlify, our hosting provider) — they process account data on our behalf under their own privacy terms. Once online payment launches, card details will be handled entirely by Stripe; this site never sees or stores your card number.</p>
+
+      <h2>Your rights</h2>
+      <p>Under the Privacy Act 2020 (New Zealand), you can ask what personal information we hold about you, ask us to correct it, or ask us to delete your account. Contact <a href="mailto:sales@khyberspice.co.nz" style="color:var(--turmeric);">sales@khyberspice.co.nz</a> for any of this.</p>
+
+      <h2>Cookies &amp; local storage</h2>
+      <p>This site uses your browser's local storage (not tracking cookies) to remember your basket contents and colour theme between visits. This data stays on your device and isn't accessible to us.</p>
+
+      <h2>Changes</h2>
+      <p>If this policy changes, the "last updated" date at the top will change too.</p>
+    </div>
+  </div>
+</section>
+"""
+write("privacy.html", head("Privacy Policy — Khyber Spice Invader", "How Khyber Spice Invader collects and uses information on this website.", "privacy.html") + privacy_body + FOOT)
+
+# ------------------------------------------------------------------
+# TERMS & CONDITIONS
+# ------------------------------------------------------------------
+terms_body = """
+<section class="info-page">
+  <div class="wrap">
+    <h1>Terms &amp; Conditions</h1>
+    <p class="lede">Last updated August 2026. The basics of using this website and buying from us.</p>
+    <div class="callout">This is a starting draft, not legal advice — see the note at the end before relying on it for a live business.</div>
+    <div class="prose" style="max-width:70ch;">
+      <h2>About this site</h2>
+      <p>This website is operated by Khyber Spice Invader, 822 Manukau Road, Royal Oak, Auckland 1061, New Zealand. Using this site means you accept these terms.</p>
+
+      <h2>Product information</h2>
+      <p>We do our best to keep prices, descriptions and stock status accurate, but items can sell out or change price in-store faster than the website updates. If anything here doesn't match what's in-store, the in-store price and availability is what applies — please call us on 09 625 1766 to confirm before making a special trip for something specific.</p>
+
+      <h2>Online ordering</h2>
+      <p>Online checkout is not yet live on this site. Adding items to your basket does not place an order — for now, use it as a shopping list and call the store to arrange purchase or delivery. Once online payment (via Stripe) launches, separate checkout terms covering payment, delivery timing and cancellation will be added here.</p>
+
+      <h2>Your consumer rights</h2>
+      <p>Nothing in these terms limits your rights under the Consumer Guarantees Act 1993 or the Fair Trading Act 1986. Goods you buy from us, in-store or online, come with guarantees that can't be excluded under New Zealand law.</p>
+
+      <h2>Shipping</h2>
+      <p>See the <a href="shipping.html" style="color:var(--turmeric);">Shipping page</a> for current delivery rates and timeframes by region.</p>
+
+      <h2>Liability</h2>
+      <p>This website is provided as-is. We're not liable for indirect or consequential loss arising from use of the site, to the extent permitted by law — this doesn't affect your statutory rights above.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about these terms: <a href="mailto:sales@khyberspice.co.nz" style="color:var(--turmeric);">sales@khyberspice.co.nz</a> or 09 625 1766.</p>
+    </div>
+  </div>
+</section>
+"""
+write("terms.html", head("Terms & Conditions — Khyber Spice Invader", "Terms and conditions for using the Khyber Spice Invader website.", "terms.html") + terms_body + FOOT)
 
 # ------------------------------------------------------------------
 # PHOTO MANIFEST — exact filenames the local-override system checks,
